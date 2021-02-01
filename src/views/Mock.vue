@@ -297,8 +297,7 @@ export default {
             else if (VAR_TYPE.Object === type) {
                 const object = activeMockData || {};
                 for (const childNode of activeNode.children) {
-                    // console.log(object);
-                    object[childNode.propName] = this.mock(childNode, object);
+                    object[childNode.propName] = this.mock(childNode, object[childNode.propName]);
                 }
                 this.isMockCreating = false;
                 return object;
