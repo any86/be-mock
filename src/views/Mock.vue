@@ -17,7 +17,7 @@
             <FormProp
                 v-model="editFormData"
                 @input="updateTreeNode"
-                @close="isShowEditFor = false"
+                @close="isShowEditForm = false"
             />
         </Drawer>
 
@@ -77,17 +77,10 @@ import { VAR_TYPE, VAR_TYPE_LIST } from '@/const';
 import {
     MOCK_TYPES,
     MOCK_TYPE,
-    MOCK_TYPE_POOL,
     getStringType,
-    mockString,
+    mockString,createMockConfig,
 } from '@/shared/mock.js';
-const createMock = (type = MOCK_TYPE_POOL) => ({
-    type,
-    times: 1,
-    max: 7,
-    min: 0,
-    pool: '白日依山尽,黄河入海流,欲穷千里目,更上一层楼',
-});
+
 export default {
     name: 'Mock',
 
@@ -96,7 +89,7 @@ export default {
     data() {
         const form = {
             type: VAR_TYPE.String,
-            mock: createMock(),
+            mock: createMockConfig(),
         };
         return {
             VAR_TYPE,
@@ -178,7 +171,7 @@ export default {
                 type: VAR_TYPE.String,
                 parentType: type,
                 propName: VAR_TYPE.Object === type ? '' : void 0,
-                mock: createMock(),
+                mock: createMockConfig(),
                 children: [],
                 expand: false,
             };
@@ -200,7 +193,7 @@ export default {
          * 重置mock设置
          */
         onChangeVarType() {
-            this.$set(this.editFormData, 'mock', createMock());
+            this.$set(this.editFormData, 'mock', createMockConfig());
         },
 
         /**

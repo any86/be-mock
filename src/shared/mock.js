@@ -9,7 +9,7 @@ const MOCK_TYPE_EMAIL = 'Email';
 const MOCK_TYPE_IP4 = 'IPv4';
 const MOCK_TYPE_IP6 = 'IPv6';
 const MOCK_TYPE_URL = 'URL';
-export const MOCK_TYPE_POOL = 'Pool';
+const MOCK_TYPE_POOL = 'Pool';
 const MOCK_TYPE_DATE = 'Date';
 const MOCK_TYPE_LETTER = 'Letter';
 const MOCK_TYPE_OTHER = 'Other';
@@ -91,7 +91,7 @@ export function getStringType(string) {
         return MOCK_TYPE_DATE;
     }
     // 纯英文
-    else if(REGXP_LETTER.test(string)){
+    else if (REGXP_LETTER.test(string)) {
         return MOCK_TYPE_LETTER;
     }
     // 正整数, 放在最后, 范围太大了
@@ -128,8 +128,8 @@ const MOCK_FUNCTION_MAP = {
         return mockjs.Random.datetime();
     },
 
-    [MOCK_TYPE_LETTER]({ min, max }){
-        return mockjs.Random.word(min,max);
+    [MOCK_TYPE_LETTER]({ min, max }) {
+        return mockjs.Random.word(min, max);
     },
 };
 /**
@@ -157,3 +157,14 @@ export function mockString({ type, max, min, pool }) {
 //         return mockjs.Random.natural(Math.pow(10, args[0]), Math.pow(10, args[1]));
 //     }
 // };
+
+
+export function createMockConfig(type = MOCK_TYPE_POOL) {
+    return {
+        type,
+        times: 1,
+        max: 7,
+        min: 0,
+        pool: '白日依山尽,黄河入海流,欲穷千里目,更上一层楼',
+    }
+};

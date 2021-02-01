@@ -126,7 +126,7 @@
             </FormItem>
         </section>
         <footer>
-            <Button  @click="$emit('close')">取消</Button>
+            <Button @click="$emit('close')">取消</Button>
             <Button class="ml-1" @click="save" type="primary">确定</Button>
         </footer>
     </Form>
@@ -134,15 +134,7 @@
 
 <script>
 import { VAR_TYPE, VAR_TYPE_LIST } from '@/const';
-import { MOCK_TYPES, MOCK_TYPE, MOCK_TYPE_POOL } from '@/shared/mock.js';
-
-const createMockConfig = (type = MOCK_TYPE_POOL) => ({
-    type,
-    times: 1,
-    max: 7,
-    min: 0,
-    pool: '白日依山尽,黄河入海流,欲穷千里目,更上一层楼',
-});
+import { MOCK_TYPES, MOCK_TYPE, createMockConfig } from '@/shared/mock.js';
 export default {
     name: 'FormProp',
 
