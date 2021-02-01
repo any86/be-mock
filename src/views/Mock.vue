@@ -401,6 +401,8 @@ export default {
                         parentType,
                         propName: 0 == level ? '' : propName,
                         type,
+                        expand: true,
+                        children: [],
                         mock: {
                             times: 1,
                             type: mockType,
