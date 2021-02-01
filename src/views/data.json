@@ -1,0 +1,36 @@
+{
+    "msg": "success",
+    "code": "1",
+    "data": [
+        null,[null,1],
+        {
+            "parent_type_id": "010300",
+            "type_name": "现金充值机",
+            "date": "2010-01-21 10:32:11",
+            "type_id": "010303",
+            "parent_type_name": "birds",
+            "e_url": "http://baidd.com/",
+            "pic": "http://baidd.com/a.jpg",
+            "term_id": 101102,
+            "model_id": "01010301",
+            "version_id": "1001",
+            "term_name": "介质管理主机122323232323232222介",
+            "phone": "13513555652",
+            "model_name": "Linux-CentOS/CentOS",
+            "term_port": "9100",
+            "term_ip": "10.9.25.14"
+        },
+        {
+            "phone": "13513622123",
+            "e": "21313@qq.com"
+        },
+        [
+            "13513622123",
+            "21313@qq.com",
+            {
+                "c": "123"
+            }
+        ]
+    ],
+    "dataCount": 80
+}
