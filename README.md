@@ -1,3 +1,3 @@
-# prototype
-原型工具
-https://gitee.com/xin_zhong_xin/prototype
+# be-mock
+
+[一键假数据](https://any86.github.io/be-mock/)
