@@ -26,6 +26,11 @@
     margin: 0;
     padding: 0;
 }
+body{
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+}
 $headerHeight: 60px;
 .header {
     position: fixed;

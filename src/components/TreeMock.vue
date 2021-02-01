@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { VAR_COLOR_MAP } from '@/const';
+import { VAR_COLOR_MAP, VAR_TYPE } from '@/const';
 export default {
     name: 'TreeMock',
 
@@ -16,7 +16,7 @@ export default {
 
     methods: {
         treeRender(h, { root, node, data }) {
-            const { propName = '', type, mock } = data;
+            const { propName = '', parentType, type, mock } = data;
             const childrenNodes = [
                 // 属性名
                 propName,
@@ -35,11 +35,11 @@ export default {
                     })
                     `
                 ),
-                1 < mock.times
-                    ? h('span', { class: ['text-warning', 'font-6'] }, [
-                          `[假数据x${mock.times}]`,
-                      ])
-                    : void 0,
+                // 1 < mock.times
+                //     ? h('span', { class: ['text-warning', 'font-6'] }, [
+                //           `[假数据x${mock.times}]`,
+                //       ])
+                //     : void 0,
                 // 按钮
                 ['Object', 'Array'].includes(type) &&
                     h(
@@ -77,6 +77,30 @@ export default {
                     },
                     '设置'
                 ),
+
+                // 非根才有删除按钮
+                VAR_TYPE.Array === parentType &&
+                    h(
+                        'Button',
+                        {
+                            class: ['ml-1'],
+                            props: {
+                                type: 'warning',
+                                size: 'small',
+                                ghost: true,
+                            },
+                            on: {
+                                click: () => {
+                                    this.$emit('set-repeat', {
+                                        node,
+                                        data,
+                                        root,
+                                    });
+                                },
+                            },
+                        },
+                        `循环 x ${mock.times}`
+                    ),
 
                 // 非根才有删除按钮
                 void 0 !== node.parent &&

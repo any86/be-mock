@@ -2,7 +2,11 @@
     <article class="page-mock p-2">
         <!-- 添加字段 -->
         <Modal title="添加" v-model="isShowAddForm" footer-hide>
-            <FormProp v-model="addFormData" @input="addTreeNode"  @close="isShowAddForm=false"/>
+            <FormProp
+                v-model="addFormData"
+                @input="addTreeNode"
+                @close="isShowAddForm = false"
+            />
         </Modal>
 
         <!-- 编辑字段 -->
@@ -10,7 +14,11 @@
             <template v-slot:title>
                 <h1>编辑</h1>
             </template>
-            <FormProp v-model="editFormData" @input="updateTreeNode" @close="isShowEditFor=false" />
+            <FormProp
+                v-model="editFormData"
+                @input="updateTreeNode"
+                @close="isShowEditFor = false"
+            />
         </Drawer>
 
         <!-- 主视图 -->
@@ -28,6 +36,7 @@
                     @add="showAddForm"
                     @update="showEditForm"
                     @remove="removeTreeNode"
+                    @set-repeat="showMockRepeatForm"
                 />
             </Card>
             <Card class="ml-2 ovh" style="width: 50%; background: #333">
@@ -41,6 +50,10 @@
                     >
                         <Icon type="md-refresh" /> 换一批
                     </Button>
+
+                    <Button class="ml-1" type="primary" @click="saveFile">
+                        <Icon type="md-cloud-download" /> 保存
+                    </Button>
                 </h2>
                 <highlightjs
                     v-if="void 0 !== mockData"
@@ -53,6 +66,8 @@
 </template>
 
 <script>
+import { saveAs } from 'file-saver';
+import dayjs from 'dayjs';
 import mockjs from 'mockjs';
 import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
@@ -102,6 +117,9 @@ export default {
             isMockCreating: true,
 
             isShowTextareaJSON: true,
+
+            // 临时变量
+            _activeMockTimes: 1,
         };
     },
 
@@ -119,11 +137,18 @@ export default {
     },
 
     methods: {
+        saveFile() {
+            var blob = new Blob([JSON.stringify(this.mockData, null, 4)], {
+                type: 'text/plain;charset=utf-8',
+            });
+            saveAs(blob, `${dayjs().format('YYYY-MM-DD@HH-mm-ss')}.mock.json`);
+        },
+
         editDataSource() {
             this.$Modal.confirm({
                 title: '注意',
                 content: '修改会清空当前所有设置',
-                onOk:()=> {
+                onOk: () => {
                     this.$router.push({ path: '/' });
                 },
             });
@@ -177,6 +202,10 @@ export default {
         onChangeVarType() {
             this.$set(this.editFormData, 'mock', createMock());
         },
+
+        /**
+         * 修改树
+         */
         updateTreeNode() {
             // 切换数据类型必须清空子节点
             if (this.activeNodeData.type !== this.editFormData.type) {
@@ -186,6 +215,55 @@ export default {
             Object.assign(this.activeNodeData, this.editFormData);
             this.mockData = this.mock();
             this.isShowEditForm = false;
+        },
+
+        /**
+         * 设置mock数据循环次数
+         */
+        showMockRepeatForm({ data }) {
+            // console.log(data.mock.times);
+            this.$Modal.confirm({
+                title: '对应假数据循环次数',
+                render: (h) => {
+                    return h(
+                        'div',
+                        {
+                            style: {
+                                display: 'flex',
+                                alignItems: 'center',
+                            },
+                        },
+                        [
+                            // h('Slider', {
+                            //     class: ['flex-1', 'mr-1'],
+                            //     props: { min: 1, value: data.mock.times },
+                            //     on: {
+                            //         ['on-change']: (value) => {
+                            //             this._activeMockTimes = value;
+                            //         },
+                            //     },
+                            // }),
+                            h('InputNumber', {
+                                props: {
+                                    min: 1,
+                                    value: data.mock.times,
+                                    size: 'large',
+                                },
+                                on: {
+                                    ['on-change']: (value) => {
+                                        this._activeMockTimes = value;
+                                    },
+                                },
+                            }),
+                        ]
+                    );
+                },
+                onOk: () => {
+                    data.mock.times = this._activeMockTimes;
+                    this.mockData = this.mock();
+                },
+            });
+            // console.log(data.times);
         },
 
         removeTreeNode({ node, root }) {
