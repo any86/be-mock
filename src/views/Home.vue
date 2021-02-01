@@ -12,15 +12,15 @@
 
             <div class="d-flex mt-2">
                 <Button size="large" @click="empty"
-                    >清空
+                    ><Icon type="md-trash" /> 清空
                 </Button>
 
                 <Button class="ml-2" type="success" size="large" @click="loadExampleData"
-                    >加载演示数据
+                    ><Icon type="ios-paper-outline" /> 加载演示数据
                 </Button>
 
                 <Button class="ml-2" type="primary" size="large" @click="next"
-                    >确定
+                    ><Icon type="md-flash" /> 确定
                 </Button>
             </div>
             <Alert

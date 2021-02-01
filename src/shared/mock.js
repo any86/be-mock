@@ -51,7 +51,7 @@ const REGXP_IP6 = /^(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f
 const REGXP_NUMBER = /^\d+$/;
 const REGXP_URL = /^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
 const REGXP_DATE = /^\d{2,4}(-|\/)(1[0-2]|0?\d)\1([0-2]\d|\d|30|31)/;
-const REGXP_LETTER = /^[a-zA-Z]+$/
+const REGXP_LETTER = /^[a-zA-Z\s]+$/
 
 // export function getNumberType(number) {
 //     if (REGXP_PHONE.test(string)) {

@@ -3,14 +3,15 @@
     "code": "1",
     "data": [
         {
-            "name": "哈尔滨银行",
+            "cname": "哈尔滨银行",
+            "ename":"harbin bank",
             "date": "2010-01-21 10:32:11",
             "id": "010303",
             "n": 1234567,
-            "phone":"19212345678",
+            "phone":"13513555652",
             "ip": "8.8.8.8",
             "url": "http://harbin.com/",
-            "img": "http://harbin.com/a.jpg"
+            "img": "http://harbin.com/logo.jpg"
         }
     ],
     "dataCount": 10

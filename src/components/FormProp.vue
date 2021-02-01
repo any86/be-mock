@@ -1,5 +1,5 @@
 <template>
-    <Form :model="formData" :label-width="110" class="p-2">
+    <Form :model="formData" :label-width="110" class="form-prop">
         <FormItem
             v-if="
                 void 0 !== formData.propName && void 0 !== formData.parentType
@@ -125,8 +125,10 @@
                 <InputNumber v-model="formData.mock.times" :min="1" />
             </FormItem>
         </section>
-        <Button @click="save" type="primary">确定</Button>
-        <Button class="ml-1" @click="$emit('hide')">取消</Button>
+        <footer>
+            <Button  @click="$emit('close')">取消</Button>
+            <Button class="ml-1" @click="save" type="primary">确定</Button>
+        </footer>
     </Form>
 </template>
 
@@ -191,4 +193,11 @@ export default {
 };
 </script>
 <style lang="scss" scope>
+.form-prop {
+    padding: 8px;
+    > footer {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
 </style>

@@ -2,7 +2,7 @@
     <article class="page-mock p-2">
         <!-- 添加字段 -->
         <Modal title="添加" v-model="isShowAddForm" footer-hide>
-            <FormProp v-model="addFormData" @input="addTreeNode" />
+            <FormProp v-model="addFormData" @input="addTreeNode"  @close="isShowAddForm=false"/>
         </Modal>
 
         <!-- 编辑字段 -->
@@ -10,7 +10,7 @@
             <template v-slot:title>
                 <h1>编辑</h1>
             </template>
-            <FormProp v-model="editFormData" @input="updateTreeNode" />
+            <FormProp v-model="editFormData" @input="updateTreeNode" @close="isShowEditFor=false" />
         </Drawer>
 
         <!-- 主视图 -->

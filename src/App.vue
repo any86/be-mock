@@ -1,7 +1,17 @@
 <template>
     <div id="app">
         <header class="header">
-            <span class="header__logo">假数据生成器</span>
+            <div class="flex-1">
+            <span class="header__logo">BMOCK</span>
+
+            </div>
+            <a target="_new" href="https://github.com/any86/be-mock">
+                <img
+                    width="100"
+                    class="d-block"
+                    src="https://img.shields.io/github/stars/any86/be-mock?style=social"
+                />
+            </a>
         </header>
         <main class="body">
             <router-view />
