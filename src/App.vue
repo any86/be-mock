@@ -2,8 +2,7 @@
     <div id="app">
         <header class="header">
             <div class="flex-1">
-            <span class="header__logo">BMOCK</span>
-
+                <span class="header__logo" @click="$router.push({path:'/'})">BMOCK</span>
             </div>
             <a target="_new" href="https://github.com/any86/be-mock">
                 <img
@@ -44,6 +43,7 @@ $headerHeight: 60px;
     font-size: 18px;
     &__logo {
         font-weight: 900;
+        cursor: pointer;
     }
 }
 
