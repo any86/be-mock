@@ -396,7 +396,7 @@ export default {
                     const mockType = getStringType(object);
                     const max =
                         VAR_TYPE.Number === mockType
-                            ? '' + ~~object
+                            ? ~~object
                             : object.length;
                     nodes.push({
                         parentType,
