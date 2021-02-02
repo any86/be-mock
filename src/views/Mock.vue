@@ -78,7 +78,8 @@ import {
     MOCK_TYPES,
     MOCK_TYPE,
     getStringType,
-    mockString,createMockConfig,
+    mockString,
+    createMockConfig,
 } from '@/shared/mock.js';
 
 export default {
@@ -297,7 +298,10 @@ export default {
             else if (VAR_TYPE.Object === type) {
                 const object = activeMockData || {};
                 for (const childNode of activeNode.children) {
-                    object[childNode.propName] = this.mock(childNode, object[childNode.propName]);
+                    object[childNode.propName] = this.mock(
+                        childNode,
+                        object[childNode.propName]
+                    );
                 }
                 this.isMockCreating = false;
                 return object;
@@ -340,7 +344,9 @@ export default {
          * 根据输入数据生成树形数据
          */
         genSubNodes(object, parentType, propName, level = 0) {
-            const expand = 2 > level;
+            // const expand = 3 > level;
+            const expand = true;
+
             let nodes = [];
             if (isPlainObject(object)) {
                 const active = {
@@ -394,9 +400,7 @@ export default {
                     // console.log(object.length,Math.pow(10,object.length));
                     const mockType = getStringType(object);
                     const max =
-                        VAR_TYPE.Number === mockType
-                            ? ~~object
-                            : object.length;
+                        VAR_TYPE.Number === mockType ? ~~object : object.length;
                     nodes.push({
                         parentType,
                         propName: 0 == level ? '' : propName,
