@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "nodemon ./app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7"
+  },
+  "devDependencies": {
+    "pm2": "^4.5.4"
+  }
+}
