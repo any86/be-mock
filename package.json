@@ -23,6 +23,7 @@
     "mockjs": "^1.1.0",
     "mongoose": "^5.11.14",
     "parse-json": "^5.0.0",
+    "qs": "^6.9.6",
     "view-design": "^4.4.0",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",

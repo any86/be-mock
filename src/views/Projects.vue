@@ -1,6 +1,6 @@
 <template>
-    <article class="page-project">
-        <Modal v-model="isShowAddForm" title="新建" @on-ok="createProject">
+    <article class="page-projects">
+        <Modal v-model="isShowAddForm" title="创建项目" @on-ok="createProject">
             <Form>
                 <FormItem label="标题">
                     <Input v-model="addForm.title" autofocus />
@@ -8,7 +8,7 @@
             </Form>
         </Modal>
         <section>
-            <Button @click="isShowAddForm = true" type="primary">新建接口文档</Button>
+            <Button @click="isShowAddForm = true" type="primary">创建项目</Button>
         </section>
         <main>
             <Table :loading="isLoading" :columns="columns" :data="tableData">
@@ -19,8 +19,8 @@
                         style="margin-right: 5px"
                         @click="
                             $router.push({
-                                name: 'API',
-                                params: { id: 123123},
+                                name: 'Project',
+                                params: { id: 123123 },
                             })
                         "
                         >进入</Button
@@ -36,7 +36,7 @@
 
 <script>
 export default {
-    name: 'Project',
+    name: 'Projects',
     data() {
         return {
             isLoading: true,
@@ -98,14 +98,5 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.side {
-    position: relative;
-    z-index: 1;
-    width: 200px;
-    height: 100vh;
-    box-shadow: 1px 0 8px rgba(0, 0, 0, 0.3);
-}
 
-.main {
-}
 </style>

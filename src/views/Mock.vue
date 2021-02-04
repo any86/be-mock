@@ -43,7 +43,7 @@
                 <Spin v-if="isMockCreating" fix></Spin>
                 <h2 class="text-white d-flex">
                     预览
-                    <Button
+                    <Button ghost
                         class="ml-1"
                         type="success"
                         @click="mockData = mock()"
@@ -51,8 +51,12 @@
                         <Icon type="md-refresh" /> 换一批
                     </Button>
 
-                    <Button class="ml-1" type="primary" @click="saveFile">
-                        <Icon type="md-cloud-download" /> 保存
+                    <Button class="ml-1" ghost type="primary" @click="saveFile">
+                        <Icon type="md-cloud-download" /> 保存本地
+                    </Button>
+
+                    <Button class="ml-1" ghost type="warning" @click="saveAndGetURL">
+                        <Icon type="md-cloud-download" /> 生成链接
                     </Button>
                 </h2>
                 <highlightjs
@@ -131,6 +135,14 @@ export default {
     },
 
     methods: {
+        /**
+         * 生成在线链接
+         */
+        async saveAndGetURL(){
+            const {id} = await this.$http.post('/tree',{tree:this.treeData,mock:this.mockData});
+            this.$router.push({query:{id}});
+        },
+
         saveFile() {
             var blob = new Blob([JSON.stringify(this.mockData, null, 4)], {
                 type: 'text/plain;charset=utf-8',

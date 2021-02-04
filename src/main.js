@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import iView from 'view-design';
@@ -10,6 +11,13 @@ import '@5a/css/dist/helpers.css'
 import hljs from 'highlight.js/lib/core';
 import json from 'highlight.js/lib/languages/json';
 import 'highlight.js/styles/agate.css';
+
+import {
+  $http
+} from '@/apis';
+Vue.prototype.$http = $http;
+
+
 hljs.registerLanguage('json', json);
 Vue.use(hljs.vuePlugin);
 Vue.use(ElementUI);

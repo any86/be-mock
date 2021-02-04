@@ -10,8 +10,20 @@ const routes = [{
     path: '/',
     name: 'Home',
     component: Home
-}, {
-    path: '/api',
+},
+{
+    path: '/projects',
+    name: 'Projects',
+    component: () => import( /* webpackChunkName: "Projects" */ '../views/Projects.vue')
+},
+
+{
+    path: '/project/:id',
+    name: 'Project',
+    component: () => import( /* webpackChunkName: "Project" */ '../views/Project.vue')
+},
+{
+    path: '/api/:id',
     name: 'API',
     component: API
 },
