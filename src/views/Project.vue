@@ -1,15 +1,30 @@
 <template>
     <article class="page-project">
-        <Modal v-model="isShowAddForm" title="新建" @on-ok="createProject">
+        <Modal v-model="isShowAddForm" title="新建" @on-ok="createDoc">
             <Form>
                 <FormItem label="标题">
-                    <Input v-model="addForm.title" autofocus />
+                    <Input
+                        v-model="addForm.title"
+                        placeholder="给接口起个名吧"
+                    />
+                </FormItem>
+
+                <FormItem label="JSON数据">
+                    <Input
+                        v-model="addForm.JSONRaw"
+                        type="textarea"
+                        :rows="10"
+                        placeholder="请输入JSON数据"
+                    />
                 </FormItem>
             </Form>
         </Modal>
         <section>
-            <Button @click="isShowAddForm = true" type="primary">新建接口文档</Button>
+            <Button @click="isShowAddForm = true" type="primary"
+                >新建接口文档</Button
+            >
         </section>
+        <h1>接口列表</h1>
         <main>
             <Table :loading="isLoading" :columns="columns" :data="tableData">
                 <template slot-scope="{ row }" slot="action">
@@ -17,12 +32,7 @@
                         type="primary"
                         size="small"
                         style="margin-right: 5px"
-                        @click="
-                            $router.push({
-                                name: 'API',
-                                params: { id: 123123},
-                            })
-                        "
+                        @click="goToDocPage(row._id)"
                         >进入</Button
                     >
                     <Button type="error" size="small" @click="remove(row)"
@@ -35,6 +45,8 @@
 </template>
 
 <script>
+import JSON5 from 'json5';
+import genTree from '@/shared/genTree.js';
 export default {
     name: 'Project',
     data() {
@@ -70,29 +82,39 @@ export default {
 
     methods: {
         createFormData() {
-            return { title: '' };
+            return { title: '', JSONRaw: '' };
+        },
+
+        changeTextJSON(rawJSON) {
+            this.$store.commit('changeRawJSON', rawJSON);
         },
 
         async remove(row) {
             const { _id } = row;
-            await this.$http.delete('/project', { params: { id: _id } });
+            await this.$http.delete('/doc', { params: { id: _id } });
             await this.getList();
         },
 
         async getList() {
             this.isLoading = true;
-            const data = await this.$http.get('/project');
+            const data = await this.$http.get('/doc');
             this.tableData = data;
             this.isLoading = false;
         },
         /**
          * 创建项目
          */
-        async createProject() {
-            const { title } = this.addForm;
-            await this.$http.post('/project', { title });
-            this.addForm = this.createFormData();
-            await this.getList();
+        async createDoc() {
+            const { title, JSONRaw } = this.addForm;
+            const tree = genTree(JSON5.parse(JSONRaw));
+            const { id } = await this.$http.post('/doc', { title, tree });
+            this.goToDocPage(id);
+
+            // this.addForm = this.createFormData();
+        },
+
+        goToDocPage(id) {
+            this.$router.push({ name: 'Doc', params: { id } });
         },
     },
 };

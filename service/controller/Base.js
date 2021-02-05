@@ -1,14 +1,14 @@
-export default class {
+module.exports = class {
 
-    constructor(model) {
+    constructor(model={}) {
         this.model = model;
     }
 
     get(req, res) {
         const { id: _id } = req.query;
         if (_id) {
-            this.model.findOne({ _id }, (err, document) => {
-                if (err) {
+            this.model.findOne({ _id }, (error, document) => {
+                if (error) {
                     res.send(error);
                 } else {
                     res.send(document);
@@ -16,8 +16,8 @@ export default class {
 
             });
         } else {
-            this.model.find((err, document) => {
-                if (err) {
+            this.model.find((error, document) => {
+                if (error) {
                     res.send(error);
                 } else {
                     res.send(document);
@@ -26,9 +26,9 @@ export default class {
         }
     }
 
-    create(req, res) {
-        this.model.create({ ...req.body, createAt: Date.now() }, (err, { _id }) => {
-            if (err) {
+    post(req, res) {
+        this.model.create({ ...req.body, createAt: Date.now() }, (error, { _id }) => {
+            if (error) {
                 res.send(error);
             } else {
                 res.json({ id: _id });
@@ -36,10 +36,10 @@ export default class {
         });
     }
 
-    update(req, res) {
-        const { id: _id } = req.query;
-        const { _id } = this.model.updateOne({ _id }, { ...req.body, updateAt: Date.now() }, (err, { _id }) => {
-            if (err) {
+    put(req, res) {
+        const { id } = req.body;
+        this.model.updateOne({ _id: id }, { ...req.body, updateAt: Date.now() }, (error, { _id }) => {
+            if (error) {
                 res.send(error);
             } else {
                 res.json({ id: _id });
@@ -47,10 +47,10 @@ export default class {
         });
     }
 
-    remove(req, res) {
+    delete(req, res) {
         const { id: _id } = req.query;
-        await this.model.remove({ _id }, (err, { _id }) => {
-            if (err) {
+         this.model.remove({ _id }, (error, { _id }) => {
+            if (error) {
                 res.send(error);
             } else {
                 res.json({ id: _id });

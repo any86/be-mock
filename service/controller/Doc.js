@@ -1,8 +1,8 @@
 const Base = require('./Base');
-const Project = require('../model/Project');
+const Doc = require('../model/Doc');
 
 module.exports = class extends Base {
     constructor() {
-        super(Project);
+        super(Doc);
     }
 }

@@ -37,11 +37,15 @@ const routes = [{
     component: Register
 },
 {
+    path: '/doc/:id',
+    name: 'Doc',
+    component: () => import( /* webpackChunkName: "Doc" */ '../views/Doc.vue')
+},
+{
     path: '/mock',
     name: 'Mock',
     component: () => import( /* webpackChunkName: "Mock" */ '../views/Mock.vue')
 },
-
 {
     path: '/editor',
     name: 'Editor',

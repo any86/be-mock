@@ -25,8 +25,8 @@
             </Select>
         </FormItem>
 
-        <FormItem prop="desc" label="描述">
-            <Input v-model="formData.desc" placeholder="请描述" clearable />
+        <FormItem prop="text" label="简述">
+            <Input v-model="formData.text" placeholder="原型文档上的文案" clearable />
         </FormItem>
 
         <!-- 假数据设置 -->

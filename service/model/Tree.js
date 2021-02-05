@@ -7,5 +7,4 @@ const TreeSchema = new Schema({
   updateAt: Date,
 });
 
-const Tree = mongoose.model('Tree', TreeSchema);
-module.exports = Tree;
+module.exports = mongoose.model('Tree', TreeSchema);
