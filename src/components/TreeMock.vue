@@ -1,5 +1,5 @@
 <template>
-    <Tree ref="tree" :render="treeRender" :data="value" />
+    <Tree ref="tree" :render="treeRender" :data="treeData" />
 </template>
 
 <script>
@@ -8,7 +8,7 @@ export default {
     name: 'TreeMock',
 
     props: {
-        value: {
+        treeData: {
             required: true,
             type: Array,
         },
@@ -75,7 +75,7 @@ export default {
                             },
                         },
                     },
-                    '编辑'
+                    `编辑`
                 ),
 
                 // 非根才有删除按钮

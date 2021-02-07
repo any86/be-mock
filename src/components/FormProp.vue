@@ -25,7 +25,7 @@
             </Select>
         </FormItem>
 
-        <FormItem prop="text" label="简述">
+        <FormItem prop="text" label="📣简述">
             <Input v-model="formData.text" placeholder="原型文档上的文案" clearable />
         </FormItem>
 

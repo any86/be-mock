@@ -16,7 +16,7 @@ export default {
 
     methods: {
         treeRender(h, { root, node, data }) {
-            const { propName = '', parentType, type, mock } = data;
+            const { propName = '', text, type } = data;
             const childrenNodes = [
                 // 属性名
                 propName,
@@ -36,15 +36,39 @@ export default {
                     `
                 ),
 
-                data.text &&
+                VAR_TYPE.Object === type &&
                     h(
                         'Button',
                         {
                             class: ['ml-1'],
                             props: {
-                                type: 'success',
+                                type: 'info',
                                 size: 'small',
                                 ghost: true,
+                            },
+                            on: {
+                                click: () => {
+                                    this.$emit('show-node', {
+                                        node,
+                                        data,
+                                        root,
+                                    });
+                                },
+                            },
+                        },
+                        [
+                            h('span', { class: ['font-6'] }, `查看`),
+                            h('Icon', { props: { type: 'md-eye' } }),
+                        ]
+                    ),
+
+                text &&
+                    h(
+                        'Button',
+                        {
+                            class: ['ml-1'],
+                            props: {
+                                size: 'small',
                             },
                             on: {
                                 click: () => {
@@ -53,8 +77,8 @@ export default {
                             },
                         },
                         [
+                            h('span', { class: ['font-6'] }, `${text}`),
                             h('Icon', { props: { type: 'ios-copy-outline' } }),
-                            h('span', { class: ['font-6'] }, ` ${data.text}`),
                         ]
                     ),
             ];

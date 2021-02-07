@@ -4,10 +4,11 @@ const lodash = require('lodash');
 const app = express();
 const Doc = require('./controller/Doc');
 const Project = require('./controller/Project');
-
+const Mock = require('./controller/Mock');
 
 
 const project = new Project();
+const mock = new Mock();
 const doc = new Doc();
 
 const URL = "mongodb://81.70.214.186:27017/bmock";
@@ -46,6 +47,7 @@ app.get('/login', (req, res) => {
 const map = {
   '/project': project,
   '/doc':doc,
+  '/mock':mock,
 }
 
 for (const path in map) {

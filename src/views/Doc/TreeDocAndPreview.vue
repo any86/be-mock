@@ -1,5 +1,5 @@
 <template>
-    <article class="page-mock p-2">
+    <section v-if="treeData" class="row-doc p-2">
         <!-- 添加字段 -->
         <Modal title="添加" v-model="isShowAddForm" footer-hide>
             <FormProp
@@ -21,12 +21,42 @@
             />
         </Drawer>
 
+        <Drawer
+            v-model="isShowNodeDetail"
+            placement="left"
+            :title="`查看`"
+            width="60"
+        >
+            <h1>iview table</h1>
+            <highlightjs
+                v-if="void 0 !== iviewColumnTpl"
+                language="json"
+                :code="iviewColumnTpl"
+            />
+        </Drawer>
+
         <!-- 主视图 -->
-        <div class="d-flex  mt-2">
-            <Card class="flex-1 ovh" style="width: 50%; background: #333">
+        <div class="d-flex mt-2">
+            <Card class="flex-1">
+                <h2 class="d-flex">当前数据</h2>
+                <TreeMock
+                    class="mt-1"
+                    :tree-data="treeData"
+                    @add="showAddForm"
+                    @update="showEditForm"
+                    @remove="removeTreeNode"
+                    @set-repeat="showMockRepeatForm"
+                />
+            </Card>
+
+            <Card class="ml-2 flex-1">
+                <h2>预览</h2>
+                <TreeDoc class="mt-1" :value="treeData" @show-node="showNode" />
+            </Card>
+            <!-- <Card class="ml-2 ovh flex-1" style="background: #333">
                 <Spin v-if="isMockCreating" fix></Spin>
                 <h2 class="text-white d-flex">
-                    预览
+                    假数据
                     <Button
                         ghost
                         class="ml-1"
@@ -54,13 +84,9 @@
                     language="json"
                     :code="JSON.stringify(mockData, null, 4)"
                 />
-            </Card>
-
-            <Card class="flex-1  ml-2">
-                <Table :data="mocks" :columns="columns"></Table>
-            </Card>
+            </Card> -->
         </div>
-    </article>
+    </section>
 </template>
 
 <script>
@@ -68,22 +94,27 @@ import { saveAs } from 'file-saver';
 import dayjs from 'dayjs';
 import mockjs from 'mockjs';
 import cloneDeep from 'lodash/cloneDeep';
-import isPlainObject from 'lodash/isPlainObject';
 import TreeMock from '@/components/TreeMock.vue';
+import TreeDoc from '@/components/TreeDoc.vue';
 import FormProp from '@/components/FormProp.vue';
 import { VAR_TYPE, VAR_TYPE_LIST } from '@/const';
 import {
     MOCK_TYPES,
     MOCK_TYPE,
-    getStringType,
     mockString,
     createMockConfig,
 } from '@/shared/mock.js';
 
 export default {
-    name: 'Mock',
+    name: 'TreeDocAndPreview',
 
-    components: { TreeMock, FormProp },
+    props: {
+        treeData: {
+            required: true,
+        },
+    },
+
+    components: { TreeDoc, TreeMock, FormProp },
 
     data() {
         const form = {
@@ -91,10 +122,6 @@ export default {
             mock: createMockConfig(),
         };
         return {
-            mocks:[],
-columns:[],
-
-
             VAR_TYPE,
             VAR_TYPE_LIST,
             MOCK_TYPES,
@@ -103,8 +130,6 @@ columns:[],
             isShowEditForm: false,
             addFormData: { ...form },
             editFormData: { ...form },
-            // 操作区的树
-            treeData: [],
             // 生成的假数据
             mockData: void 0,
             // 当前节点数据
@@ -116,12 +141,31 @@ columns:[],
 
             // 临时变量
             _activeMockTimes: 1,
+
+            isShowNodeDetail: false,
         };
     },
 
     computed: {
-        JSON() {
-            return this.$store.state.JSON;
+        // JSON() {
+        //     return this.$store.state.JSON;
+        // },
+
+        id() {
+            return this.$route.params.id;
+        },
+
+        // iview table列配置模板数据
+        iviewColumnTpl() {
+            if (this.isShowNodeDetail) {
+                const columns = [];
+                const { children } = this.activeNodeData;
+                for (const { propName, text } of children) {
+                    const column = { title: text, key: propName };
+                    columns.push(column);
+                }
+                return JSON.stringify(columns, null, 4);
+            }
         },
     },
 
@@ -130,6 +174,12 @@ columns:[],
     },
 
     methods: {
+        showNode({ node, root, data }) {
+            this.isShowNodeDetail = true;
+            this.activeNodeData = data;
+            console.log({ node, root, data });
+        },
+
         /**
          * 生成在线链接
          */
@@ -159,7 +209,7 @@ columns:[],
         },
 
         refreshTree() {
-            this.treeData = this.genTree(this.JSON);
+            // this.treeData = this.genTree(this.JSON);
             this.mockData = this.mock();
         },
         /**
@@ -196,6 +246,7 @@ columns:[],
             this.activeNodeData.expand = true;
             this.activeNodeData.children.push(this.addFormData);
             this.mockData = this.mock();
+            this.$emit('save');
             this.isShowAddForm = false;
         },
 
@@ -215,6 +266,8 @@ columns:[],
             if (this.activeNodeData.type !== this.editFormData.type) {
                 this.$set(this.editFormData, 'children', []);
             }
+
+            this.$emit('save');
 
             Object.assign(this.activeNodeData, this.editFormData);
             this.mockData = this.mock();
@@ -280,6 +333,7 @@ columns:[],
                 parent.node.children.splice(index, 1);
             }
             this.mockData = this.mock();
+            this.$emit('save');
         },
 
         /**
@@ -290,7 +344,6 @@ columns:[],
             // 当前数据节点
             const activeNode = node || this.treeData[0];
             const { type, mock } = activeNode;
-
             // console.log(type);
             // 数组
             if (VAR_TYPE.Array === type) {
@@ -338,129 +391,6 @@ columns:[],
             } else if (VAR_TYPE.Null === type) {
                 return null;
             }
-        },
-
-        /**
-         * 获取输入数据的类型
-         */
-        getType(object) {
-            let rootType = null == object ? 'null' : typeof object;
-            return (
-                rootType[0].toUpperCase() +
-                rootType.substring(1, rootType.length)
-            );
-        },
-        /**
-         * 根据输入数据生成树形数据
-         */
-        genSubNodes(object, parentType, propName, level = 0) {
-            // const expand = 3 > level;
-            const expand = true;
-
-            let nodes = [];
-            if (isPlainObject(object)) {
-                const active = {
-                    parentType,
-                    propName,
-                    expand,
-                    type: VAR_TYPE.Object,
-                    children: [],
-                    mock: {
-                        times: 1,
-                    },
-                };
-                for (const propName in object) {
-                    const value = object[propName];
-                    active.children.push(
-                        ...this.genSubNodes(
-                            value,
-                            VAR_TYPE.Object,
-                            propName,
-                            level + 1
-                        )
-                    );
-                }
-                nodes.push(active);
-            } else if (Array.isArray(object)) {
-                const active = {
-                    parentType,
-                    propName,
-                    expand,
-                    type: VAR_TYPE.Array,
-                    children: [],
-                    mock: {
-                        times: 1,
-                    },
-                };
-                for (const item of object) {
-                    active.children.push(
-                        ...this.genSubNodes(
-                            item,
-                            VAR_TYPE.Array,
-                            void 0,
-                            level + 1
-                        )
-                    );
-                }
-                nodes.push(active);
-            } else {
-                // 对简单数据类型的进一步判断
-                const type = this.getType(object);
-                if (type === VAR_TYPE.String) {
-                    // console.log(object.length,Math.pow(10,object.length));
-                    const mockType = getStringType(object);
-                    const max =
-                        VAR_TYPE.Number === mockType ? ~~object : object.length;
-                    nodes.push({
-                        parentType,
-                        propName: 0 == level ? '' : propName,
-                        type,
-                        expand: true,
-                        children: [],
-                        mock: {
-                            times: 1,
-                            type: mockType,
-                            min: 0,
-                            max,
-                            pool: '',
-                        },
-                    });
-                } else if (type === VAR_TYPE.Number) {
-                    nodes.push({
-                        parentType,
-                        propName: 0 == level ? '' : propName,
-                        type,
-                        // 为了如果改变成Array|Object而准备的字段
-                        expand: true,
-                        children: [],
-                        // mock
-                        mock: {
-                            times: 1,
-                            type: getStringType(object),
-                            min: 0,
-                            max: object,
-                        },
-                    });
-                } else if (type === VAR_TYPE.Null) {
-                    nodes.push({
-                        parentType,
-                        propName: 0 == level ? '' : propName,
-                        type,
-                        // 预先为了改变类型把children放这
-                        children: [],
-                        expand: false,
-                        // mock
-                        mock: {
-                            times: 1,
-                        },
-                    });
-                }
-            }
-            return nodes;
-        },
-
-        genTree(object) {
-            return this.genSubNodes(object);
         },
     },
 };

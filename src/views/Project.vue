@@ -1,6 +1,6 @@
 <template>
     <article class="page-project">
-        <Modal v-model="isShowAddForm" title="新建" @on-ok="createDoc">
+        <Modal v-model="isShowAddForm" title="新建接口文档" @on-ok="createDoc">
             <Form>
                 <FormItem label="标题">
                     <Input
@@ -9,11 +9,27 @@
                     />
                 </FormItem>
 
-                <FormItem label="JSON数据">
+                <FormItem label="请求头">
                     <Input
-                        v-model="addForm.JSONRaw"
+                        v-model="addForm.JSONRawHeader"
                         type="textarea"
-                        :rows="10"
+                        :rows="2"
+                        placeholder="请输入JSON数据"
+                    />
+                </FormItem>
+                <FormItem label="请求参数">
+                    <Input
+                        v-model="addForm.JSONRawRequest"
+                        type="textarea"
+                        :rows="2"
+                        placeholder="请输入JSON数据"
+                    />
+                </FormItem>
+                <FormItem label="返回值">
+                    <Input
+                        v-model="addForm.JSONRawResponse"
+                        type="textarea"
+                        :rows="5"
                         placeholder="请输入JSON数据"
                     />
                 </FormItem>
@@ -47,6 +63,16 @@
 <script>
 import JSON5 from 'json5';
 import genTree from '@/shared/genTree.js';
+
+function createFormData() {
+    return {
+        title: '',
+        JSONRawHeader: '',
+        JSONRawRequest: '',
+        JSONRawResponse: '',
+    };
+}
+
 export default {
     name: 'Project',
     data() {
@@ -54,7 +80,7 @@ export default {
             isLoading: true,
             isShowAddForm: false,
             tableData: [],
-            addForm: this.createFormData(),
+            addForm: createFormData(),
             columns: [
                 {
                     title: '标题',
@@ -81,14 +107,6 @@ export default {
     },
 
     methods: {
-        createFormData() {
-            return { title: '', JSONRaw: '' };
-        },
-
-        changeTextJSON(rawJSON) {
-            this.$store.commit('changeRawJSON', rawJSON);
-        },
-
         async remove(row) {
             const { _id } = row;
             await this.$http.delete('/doc', { params: { id: _id } });
@@ -105,9 +123,19 @@ export default {
          * 创建项目
          */
         async createDoc() {
-            const { title, JSONRaw } = this.addForm;
-            const tree = genTree(JSON5.parse(JSONRaw));
-            const { id } = await this.$http.post('/doc', { title, tree });
+            const {
+                title,
+                JSONRawResponse,
+                JSONRawHeader,
+                JSONRawRequest,
+            } = this.addForm;
+
+            const { id } = await this.$http.post('/doc', {
+                title,
+                treeRequest: genTree(JSON5.parse(JSONRawRequest)),
+                treeHeader: genTree(JSON5.parse(JSONRawHeader)),
+                treeResponse: genTree(JSON5.parse(JSONRawResponse)),
+            });
             this.goToDocPage(id);
 
             // this.addForm = this.createFormData();

@@ -22,7 +22,7 @@ module.exports = class {
                 } else {
                     res.send(document);
                 }
-            });
+            }).sort({_id:1});
         }
     }
 
