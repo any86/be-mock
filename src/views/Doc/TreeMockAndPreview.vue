@@ -1,51 +1,95 @@
 <template>
-    <Row>
-        <!-- 主视图 -->
-        <i-col :xs="24" :sm="24" :md="24" :lg="12" class="p-1">
-            <Card class="flex-1 ovh" style="background: #333">
-                <Spin v-if="isMockCreating" fix></Spin>
-                <h2 class="text-white d-flex">
-                    预览
-                    <Button
-                        ghost
-                        class="ml-1"
-                        type="success"
-                        @click="mockData = mock()"
-                    >
-                        <Icon type="md-refresh" /> 换一批
-                    </Button>
+    <article class="tree-mock-and-preview">
+        <Modal
+            v-model="isShowQueryForm"
+            title="请确认参数"
+            @on-ok="saveAndGetURL"
+        >
+            <Form inline>
+                <FormItem
+                    :label="`${propName} (${type})`"
+                    v-for="{ type, propName } in requestParams"
+                    :key="propName"
+                >
+                    <InputNumber
+                        v-if="'Number' === type"
+                        placeholder="请输入模拟值"
+                        v-model="queryFormData[propName]"
+                    />
 
-                    <Button class="ml-1" ghost type="primary" @click="saveFile">
-                        <Icon type="md-cloud-download" /> 保存本地
-                    </Button>
+                    <Input
+                        v-else
+                        v-model="queryFormData[propName]"
+                        clearable
+                        placeholder="请输入模拟值"
+                    />
+                </FormItem>
+            </Form>
+        </Modal>
 
-                    <Button
-                        class="ml-1"
-                        ghost
-                        type="warning"
-                        @click="saveAndGetURL"
-                    >
-                        <Icon type="md-cloud-download" /> 生成链接
-                    </Button>
-                </h2>
-                <highlightjs
-                    v-if="void 0 !== mockData"
-                    language="json"
-                    :code="JSON.stringify(mockData, null, 4)"
-                />
-            </Card>
-        </i-col>
+        <Row>
+            <!-- 主视图 -->
+            <i-col :xs="24" :sm="24" :md="24" :lg="12" class="p-1">
+                <Card class="flex-1 ovh" style="background: #333">
+                    <Spin v-if="isMockCreating" fix></Spin>
+                    <h2 class="text-white d-flex">
+                        预览
+                        <Button
+                            ghost
+                            class="ml-1"
+                            type="success"
+                            @click="mockData = mock()"
+                        >
+                            <Icon type="md-refresh" /> 换一批
+                        </Button>
 
-        <i-col :xs="24" :sm="24" :md="24" :lg="12" class="p-1">
-            <Table :data="mocks" :columns="columns" border>
-                <template slot-scope="{ row }" slot="action">
-                    <Button type="error" size="small" @click="remove(row)"
-                        >删除</Button
-                    >
-                </template>
-            </Table>
-        </i-col>
-    </Row>
+                        <Button
+                            class="ml-1"
+                            ghost
+                            type="primary"
+                            @click="saveFile"
+                        >
+                            <Icon type="md-cloud-download" /> 保存本地
+                        </Button>
+
+                        <Button
+                            class="ml-1"
+                            ghost
+                            type="warning"
+                            @click="isShowQueryForm = true"
+                        >
+                            <Icon type="md-cloud-download" /> 生成链接
+                        </Button>
+                    </h2>
+                    <highlightjs
+                        v-if="void 0 !== mockData"
+                        language="json"
+                        :code="JSON.stringify(mockData, null, 4)"
+                    />
+                </Card>
+            </i-col>
+
+            <i-col :xs="24" :sm="24" :md="24" :lg="12" class="p-1">
+                <Table :data="mocks" :columns="columns" border>
+                    <template slot-scope="{ row }" slot="action">
+                        <Button
+                            type="success"
+                            size="small"
+                            @click="copyURL(row)"
+                            >复制链接</Button
+                        >
+                        <Button
+                            class="ml-1"
+                            type="error"
+                            size="small"
+                            @click="remove(row)"
+                            >删除</Button
+                        >
+                    </template>
+                </Table>
+            </i-col>
+        </Row>
+    </article>
 </template>
 
 <script>
@@ -62,6 +106,9 @@ export default {
         treeData: {
             required: true,
         },
+        requestParams: {
+            type: Array,
+        },
     },
 
     data() {
@@ -69,19 +116,24 @@ export default {
             type: VAR_TYPE.String,
             mock: createMockConfig(),
         };
+
+        const queryFormData = {};
+        this.requestParams.forEach(({ propName, type }) => {
+            queryFormData[propName] = VAR_TYPE.Number === type ? 1 : '';
+        });
+
         return {
+            isShowQueryForm: false,
+            queryString: '',
+            queryFormData,
+
             mocks: [],
             columns: [
                 {
-                    title: 'id',
-                    render(h,{row}){
-                        return h('a',{on:{
-                            click(){
-                                window.location.href = `http://127.0.0.1:3000/mock/${row._id}`
-                                // console.log(row)
-                            }
-                        }}, row._id);
-                    }
+                    title: '参数',
+                    render(h, { row }) {
+                        return h('span', JSON.stringify(row.params));
+                    },
                 },
                 {
                     title: '创建时间',
@@ -92,7 +144,7 @@ export default {
                 {
                     title: '操作',
                     slot: 'action',
-                    width: 150,
+                    width: 200,
                     align: 'center',
                 },
             ],
@@ -104,7 +156,15 @@ export default {
             mockData: void 0,
 
             isMockCreating: true,
+
+            isTableLoading: true,
         };
+    },
+
+    computed: {
+        docId() {
+            return this.$route.params.id;
+        },
     },
 
     mounted() {
@@ -113,16 +173,39 @@ export default {
     },
 
     methods: {
+        copyURL(row) {
+            const query = [];
+            for (const key in row.params) {
+                query.push(`${key}=${row.params[key]}`);
+            }
+
+            const URL = `http://127.0.0.1:3000/mock/${row.docId}?${query.join(
+                '&'
+            )}`;
+            
+            console.log(URL);
+            this.$copyText(URL)
+                .then((e) => {
+                    this.$Message.success('复制成功');
+                })
+                .catch((e) => {
+                    this.$Message.error('复制失败, 请重试');
+                });
+        },
+
         async remove(row) {
-            const data = await this.$http.delete('/mock', {
+            await this.$http.delete('/mock', {
                 params: { id: row._id },
             });
             this.getMockList();
-            console.log(data);
         },
 
         async getMockList() {
-            this.mocks = await this.$http.get('/mock');
+            this.isTableLoading = true;
+            this.mocks = await this.$http.get('/mock', {
+                params: { docId: this.docId },
+            });
+            this.isTableLoading = false;
         },
         /**
          * 生成在线链接
@@ -130,9 +213,10 @@ export default {
         async saveAndGetURL() {
             await this.$http.post('/mock', {
                 mock: this.mockData,
+                params: this.queryFormData,
+                docId: this.docId,
             });
             this.getMockList();
-            // this.$router.push({ query: { id } });
         },
 
         saveFile() {

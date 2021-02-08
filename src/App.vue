@@ -64,4 +64,10 @@ $headerHeight: 60px;
         }
     }
 }
+
+.ivu-table-cell>span:empty:after{
+    content:'暂无数据';
+    font-size:12px;
+    color:#ccc;
+}
 </style>

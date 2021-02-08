@@ -8,29 +8,35 @@
             </Form>
         </Modal>
         <section>
-            <Button @click="isShowAddForm = true" type="primary">创建项目</Button>
+            <Button @click="isShowAddForm = true" type="primary"
+                >创建项目</Button
+            >
         </section>
-        <main>
-            <Table :loading="isLoading" :columns="columns" :data="tableData">
-                <template slot-scope="{ row }" slot="action">
-                    <Button
-                        type="primary"
-                        size="small"
-                        style="margin-right: 5px"
-                        @click="
-                            $router.push({
-                                name: 'Project',
-                                params: { id: 123123 },
-                            })
-                        "
-                        >进入</Button
-                    >
-                    <Button type="error" size="small" @click="remove(row)"
-                        >删除</Button
-                    >
-                </template>
-            </Table>
-        </main>
+        <Table
+            class="mt-2"
+            :loading="isLoading"
+            :columns="columns"
+            border
+            :data="tableData"
+        >
+            <template slot-scope="{ row }" slot="action">
+                <Button
+                    type="primary"
+                    size="small"
+                    style="margin-right: 5px"
+                    @click="
+                        $router.push({
+                            name: 'Project',
+                            params: { id: row._id },
+                        })
+                    "
+                    >进入</Button
+                >
+                <Button type="error" size="small" @click="remove(row)"
+                    >删除</Button
+                >
+            </template>
+        </Table>
     </article>
 </template>
 
@@ -98,5 +104,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
+.page-projects {
+    padding: 16px;
+}
 </style>

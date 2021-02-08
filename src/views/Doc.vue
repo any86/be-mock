@@ -1,7 +1,8 @@
 <template>
     <article class="page-doc p-2">
         <Spin fix v-if="isLoading"></Spin>
-        <Tabs v-if="!isLoading" v-model="activeTab">
+        <p>{{httpMethod}} - {{ url }}</p>
+        <Tabs v-if="!isLoading" :value="activeTab" @input="changeTab">
             <TabPane label="头信息" name="0">
                 <TreeDocAndPreview :tree-data="treeHeader" @save="syncDb" />
             </TabPane>
@@ -13,7 +14,11 @@
             </TabPane>
 
             <TabPane label="假数据" name="3">
-                <TreeMockAndPreview :tree-data="treeResponse" />
+                <TreeMockAndPreview
+                    ref="mock"
+                    :tree-data="treeResponse"
+                    :request-params="requestParams"
+                />
             </TabPane>
         </Tabs>
     </article>
@@ -26,21 +31,31 @@ import TreeMockAndPreview from './Doc/TreeMockAndPreview';
 export default {
     name: 'Doc',
 
-    components: { TreeDocAndPreview,TreeMockAndPreview },
+    components: { TreeDocAndPreview, TreeMockAndPreview },
 
     data() {
         return {
             isLoading: true,
-            activeTab: '0',
+            activeTab: this.$route.query.tab || '0',
             treeHeader: [],
             treeRequest: [],
             treeResponse: [],
+            url: '',
+            httpMethod: '',
         };
     },
 
     computed: {
         id() {
             return this.$route.params.id;
+        },
+
+        requestParams() {
+            const result = [];
+            for (const { propName, type } of this.treeRequest[0].children) {
+                result.push({ propName, type });
+            }
+            return result;
         },
     },
 
@@ -49,16 +64,28 @@ export default {
     },
 
     methods: {
+        changeTab(index) {
+            if (this.$route.query.tab != index) {
+                if (index === '3') {
+                    this.$refs.mock.refreshMock();
+                }
+                this.$router.replace({
+                    query: { ...this.$route.query, tab: index },
+                });
+            }
+        },
+
         async getDoc() {
             this.isLoading = true;
             const {
                 treeHeader,
                 treeRequest,
                 treeResponse,
-            } = await this.$http.get('/doc', {
-                params: { id: this.id },
-            });
-
+                url,
+                method,
+            } = await this.$http.get(`/doc/${this.id}`);
+            this.url = url;
+            this.httpMethod = method;
             this.treeHeader = treeHeader;
             this.treeRequest = treeRequest;
             this.treeResponse = treeResponse;
@@ -78,10 +105,4 @@ export default {
 };
 </script>
 <style lang="scss" scope>
-.page-mock {
-    .textarea-json {
-        margin: 5vw auto;
-        width: 90vw;
-    }
-}
 </style>

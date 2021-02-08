@@ -18,7 +18,7 @@ mongoose.connect(URL, {
   useFindAndModify: false,
   useCreateIndex: true
 }).then(d => {
-
+console.warn('mongo:ok');
 });
 app.use(express.json())
 
@@ -31,7 +31,7 @@ app.all('*', function (req, res, next) {
 });
 
 app.listen(3000, () => {
-  console.log('success')
+  console.warn('express:ok')
 });
 
 app.get('/', (req, res) => {
@@ -46,13 +46,14 @@ app.get('/login', (req, res) => {
 
 const map = {
   '/project': project,
-  '/doc':doc,
-  '/mock':mock,
+  '/doc': doc,
+  '/mock': mock,
 }
 
 for (const path in map) {
   const controller = map[path];
-  app.get(path, controller.get.bind(controller));
+  app.get(`${path}`, controller.get.bind(controller));
+  app.get(`${path}/:id`, controller.get.bind(controller));
   app.post(path, controller.post.bind(controller));
   app.put(path, controller.put.bind(controller));
   app.delete(path, controller.delete.bind(controller));

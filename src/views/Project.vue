@@ -8,6 +8,20 @@
                         placeholder="给接口起个名吧"
                     />
                 </FormItem>
+                <FormItem label="请求地址">
+                    <Input
+                        v-model="addForm.url"
+                        placeholder="请求地址"
+                    />
+                </FormItem>
+                <FormItem label="请求类型">
+                    <Select v-model="addForm.method">
+                        <Option value="GET">GET</Option>
+                        <Option value="POST">POST</Option>
+                        <Option value="PUT">PUT</Option>
+                        <Option value="DELETE">DELETE</Option>
+                    </Select>
+                </FormItem>
 
                 <FormItem label="请求头">
                     <Input
@@ -35,28 +49,32 @@
                 </FormItem>
             </Form>
         </Modal>
-        <section>
-            <Button @click="isShowAddForm = true" type="primary"
-                >新建接口文档</Button
-            >
-        </section>
-        <h1>接口列表</h1>
-        <main>
-            <Table :loading="isLoading" :columns="columns" :data="tableData">
-                <template slot-scope="{ row }" slot="action">
-                    <Button
-                        type="primary"
-                        size="small"
-                        style="margin-right: 5px"
-                        @click="goToDocPage(row._id)"
-                        >进入</Button
-                    >
-                    <Button type="error" size="small" @click="remove(row)"
-                        >删除</Button
-                    >
-                </template>
-            </Table>
-        </main>
+
+        <h2>接口列表</h2>
+
+        <Button class="mt-2" @click="isShowAddForm = true" type="primary"
+            >新建接口文档</Button
+        >
+        <Table
+            class="mt-2"
+            border
+            :loading="isLoading"
+            :columns="columns"
+            :data="tableData"
+        >
+            <template slot-scope="{ row }" slot="action">
+                <Button
+                    type="primary"
+                    size="small"
+                    style="margin-right: 5px"
+                    @click="goToDocPage(row._id)"
+                    >进入</Button
+                >
+                <Button type="error" size="small" @click="remove(row)"
+                    >删除</Button
+                >
+            </template>
+        </Table>
     </article>
 </template>
 
@@ -67,6 +85,8 @@ import genTree from '@/shared/genTree.js';
 function createFormData() {
     return {
         title: '',
+        method: 'GET',
+        url: '',
         JSONRawHeader: '',
         JSONRawRequest: '',
         JSONRawResponse: '',
@@ -102,6 +122,12 @@ export default {
         };
     },
 
+    computed: {
+        projectId() {
+            return this.$route.params.id;
+        },
+    },
+
     mounted() {
         this.getList();
     },
@@ -115,8 +141,11 @@ export default {
 
         async getList() {
             this.isLoading = true;
-            const data = await this.$http.get('/doc');
-            this.tableData = data;
+            this.tableData = await this.$http.get('/doc', {
+                params: {
+                    projectId: this.projectId,
+                },
+            });
             this.isLoading = false;
         },
         /**
@@ -125,13 +154,16 @@ export default {
         async createDoc() {
             const {
                 title,
+                url,
+                method,
                 JSONRawResponse,
                 JSONRawHeader,
                 JSONRawRequest,
             } = this.addForm;
 
             const { id } = await this.$http.post('/doc', {
-                title,
+                title,url,method,
+                projectId: this.projectId,
                 treeRequest: genTree(JSON5.parse(JSONRawRequest)),
                 treeHeader: genTree(JSON5.parse(JSONRawHeader)),
                 treeResponse: genTree(JSON5.parse(JSONRawResponse)),
@@ -156,6 +188,7 @@ export default {
     box-shadow: 1px 0 8px rgba(0, 0, 0, 0.3);
 }
 
-.main {
+.page-project {
+    padding: 16px;
 }
 </style>

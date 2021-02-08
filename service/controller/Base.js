@@ -1,6 +1,6 @@
 module.exports = class {
 
-    constructor(model={}) {
+    constructor(model = {}) {
         this.model = model;
     }
 
@@ -13,16 +13,15 @@ module.exports = class {
                 } else {
                     res.send(document);
                 }
-
             });
         } else {
-            this.model.find((error, document) => {
+            this.model.find().sort({ createAt: -1 }).exec((error, document) => {
                 if (error) {
                     res.send(error);
                 } else {
                     res.send(document);
                 }
-            }).sort({_id:1});
+            });
         }
     }
 
@@ -49,7 +48,7 @@ module.exports = class {
 
     delete(req, res) {
         const { id: _id } = req.query;
-         this.model.remove({ _id }, (error, { _id }) => {
+        this.model.deleteOne({ _id }, (error, { _id }) => {
             if (error) {
                 res.send(error);
             } else {

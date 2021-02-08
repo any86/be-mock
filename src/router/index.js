@@ -6,13 +6,16 @@ import API from '../views/API'
 import Register from '../views/Register'
 
 Vue.use(VueRouter)
-const routes = [{
-    path: '/',
-    name: 'Home',
-    component: Home
-},
+const routes = [
+    
+    
+//     {
+//     path: '/',
+//     name: 'Home',
+//     component: Home
+// },
 {
-    path: '/projects',
+    path: '/',
     name: 'Projects',
     component: () => import( /* webpackChunkName: "Projects" */ '../views/Projects.vue')
 },
