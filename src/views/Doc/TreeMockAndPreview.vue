@@ -118,9 +118,11 @@ export default {
         };
 
         const queryFormData = {};
-        this.requestParams.forEach(({ propName, type }) => {
-            queryFormData[propName] = VAR_TYPE.Number === type ? 1 : '';
-        });
+        if (void 0 !== this.requestParams) {
+            this.requestParams.forEach(({ propName, type }) => {
+                queryFormData[propName] = VAR_TYPE.Number === type ? 1 : '';
+            });
+        }
 
         return {
             isShowQueryForm: false,
@@ -182,7 +184,7 @@ export default {
             const URL = `http://127.0.0.1:3000/mock/${row.docId}?${query.join(
                 '&'
             )}`;
-            
+
             console.log(URL);
             this.$copyText(URL)
                 .then((e) => {
@@ -234,6 +236,7 @@ export default {
          * 生成假数据
          */
         mock(node, activeMockData) {
+            if (void 0 === this.treeData) return;
             this.isMockCreating = true;
             // 当前数据节点
             const activeNode = node || this.treeData[0];

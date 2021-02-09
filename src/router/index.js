@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login'
-import API from '../views/API'
 import Register from '../views/Register'
 
 Vue.use(VueRouter)
@@ -24,11 +23,6 @@ const routes = [
     path: '/project/:id',
     name: 'Project',
     component: () => import( /* webpackChunkName: "Project" */ '../views/Project.vue')
-},
-{
-    path: '/api/:id',
-    name: 'API',
-    component: API
 },
 {
     path: '/login',

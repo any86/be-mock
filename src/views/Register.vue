@@ -22,13 +22,7 @@
 </template>
 
 <script>
-const AV = require('leancloud-storage');
-AV.init({
-    appId: 'd17RQjEX9eSkciEREen6TSJ6-gzGzoHsz',
-    appKey: 'N8WGys9ctTNQ5oS745ltEaGh',
-    serverURL: 'https://d17rqjex.lc-cn-n1-shared.com',
-});
-const { Query, User } = AV;
+
 export default {
     name: 'Register',
 
@@ -45,17 +39,7 @@ export default {
 
     methods: {
         login() {
-            // 创建实例
-            const user = new AV.User();
-            user.setUsername(this.form.userName);
-            user.setPassword(this.form.password);
-            user.signUp().then(
-                (user) => {
-                    // 注册成功
-                    console.log(`注册成功。objectId：${user.id}`);
-                },
-                (error) => {}
-            );
+         
         },
     },
 };

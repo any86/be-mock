@@ -10,8 +10,8 @@ const schema = new Schema({
   treeRequest: { type: Object, isRequired: true },
   treeResponse: { type: Object, isRequired: true },
   mock: { type: Object, isRequired: true },
-  createAt: Date,
-  updateAt: Date,
+  createAt: { type: Date,  isRequired: true },
+  updateAt: { type: Date, default: Date.now(), isRequired: true },
 });
 
 module.exports = mongoose.model('Doc', schema);

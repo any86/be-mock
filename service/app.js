@@ -56,6 +56,7 @@ for (const path in map) {
   app.get(`${path}/:id`, controller.get.bind(controller));
   app.post(path, controller.post.bind(controller));
   app.put(path, controller.put.bind(controller));
+  app.put(`${path}/:id`, controller.put.bind(controller));
   app.delete(path, controller.delete.bind(controller));
 }
 

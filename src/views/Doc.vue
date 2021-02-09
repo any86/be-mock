@@ -1,16 +1,35 @@
 <template>
     <article class="page-doc p-2">
         <Spin fix v-if="isLoading"></Spin>
-        <p>{{httpMethod}} - {{ url }}</p>
+        <div class="p-2 font-4">
+            <b class="font-3 text-primary">{{ httpMethod }}</b> : {{ url }}
+            <Button size="small" @click="$copy(url)"
+                ><Icon type="md-copy" /> 复制</Button
+            >
+        </div>
         <Tabs v-if="!isLoading" :value="activeTab" @input="changeTab">
             <TabPane label="头信息" name="0">
-                <TreeDocAndPreview :tree-data="treeHeader" @save="syncDb" />
+                <TableEditor
+                    :value="treeHeader"
+                    @save="updateDoc('treeHeader',$event)"
+                />
+                <!-- <TreeDocAndPreview v-if="treeHeader && treeHeader.length > 0" :tree-data="treeHeader" @save="syncDb" /> -->
             </TabPane>
             <TabPane label="请求" name="1">
-                <TreeDocAndPreview :tree-data="treeRequest" @save="syncDb" />
+                <TableEditor
+                    :value="treeRequest"
+                    @save="updateDoc('treeRequest',$event)"
+                />
             </TabPane>
             <TabPane label="响应" name="2">
-                <TreeDocAndPreview :tree-data="treeResponse" @save="syncDb" />
+                <TreeDocAndPreview
+                    v-if="treeResponse && treeResponse.length > 0"
+                    :tree-data="treeResponse"
+                    @save="syncDb"
+                />
+                <p v-else>
+                    <Button>创建数据</Button>
+                </p>
             </TabPane>
 
             <TabPane label="假数据" name="3">
@@ -27,11 +46,12 @@
 <script>
 import TreeDocAndPreview from './Doc/TreeDocAndPreview';
 import TreeMockAndPreview from './Doc/TreeMockAndPreview';
+import TableEditor from './Doc/TableEditor';
 
 export default {
     name: 'Doc',
 
-    components: { TreeDocAndPreview, TreeMockAndPreview },
+    components: { TreeDocAndPreview, TreeMockAndPreview, TableEditor },
 
     data() {
         return {
@@ -51,9 +71,10 @@ export default {
         },
 
         requestParams() {
+            if (void 0 === this.treeRequest) return;
             const result = [];
-            for (const { propName, type } of this.treeRequest[0].children) {
-                result.push({ propName, type });
+            for (const { key, value } of this.treeRequest) {
+                result.push({ key, value });
             }
             return result;
         },
@@ -64,6 +85,12 @@ export default {
     },
 
     methods: {
+        updateDoc(key, value) {
+            console.log(key,value);
+            this.$http.put('/doc/' + this.id, {
+                [key]: value,
+            });
+        },
         changeTab(index) {
             if (this.$route.query.tab != index) {
                 if (index === '3') {

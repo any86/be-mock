@@ -12,6 +12,7 @@
                 >创建项目</Button
             >
         </section>
+
         <Table
             class="mt-2"
             :loading="isLoading"
@@ -53,6 +54,12 @@ export default {
                 {
                     title: '标题',
                     key: 'title',
+                },
+                {
+                    title: '最近修改',
+                    render(h, { row }) {
+                        return h('Time', { props: { time: row.updateAt } });
+                    },
                 },
                 {
                     title: '创建时间',

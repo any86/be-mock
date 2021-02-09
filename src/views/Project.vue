@@ -9,10 +9,7 @@
                     />
                 </FormItem>
                 <FormItem label="请求地址">
-                    <Input
-                        v-model="addForm.url"
-                        placeholder="请求地址"
-                    />
+                    <Input v-model="addForm.url" placeholder="请求地址" />
                 </FormItem>
                 <FormItem label="请求类型">
                     <Select v-model="addForm.method">
@@ -23,7 +20,7 @@
                     </Select>
                 </FormItem>
 
-                <FormItem label="请求头">
+                <!-- <FormItem label="请求头">
                     <Input
                         v-model="addForm.JSONRawHeader"
                         type="textarea"
@@ -46,7 +43,7 @@
                         :rows="5"
                         placeholder="请输入JSON数据"
                     />
-                </FormItem>
+                </FormItem> -->
             </Form>
         </Modal>
 
@@ -107,9 +104,16 @@ export default {
                     key: 'title',
                 },
                 {
-                    title: '创建时间',
+                    title: '地址',
+                    key: 'url',
+                },{
+                    title: '请求方式',
+                    key: 'method',
+                },
+                {
+                    title: '最近修改',
                     render(h, { row }) {
-                        return h('Time', { props: { time: row.createAt } });
+                        return h('Time', { props: { time: row.updateAt } });
                     },
                 },
                 {
@@ -162,11 +166,13 @@ export default {
             } = this.addForm;
 
             const { id } = await this.$http.post('/doc', {
-                title,url,method,
+                title,
+                url,
+                method,
                 projectId: this.projectId,
-                treeRequest: genTree(JSON5.parse(JSONRawRequest)),
-                treeHeader: genTree(JSON5.parse(JSONRawHeader)),
-                treeResponse: genTree(JSON5.parse(JSONRawResponse)),
+                // treeRequest: genTree(JSON5.parse(JSONRawRequest)),
+                // treeHeader: genTree(JSON5.parse(JSONRawHeader)),
+                // treeResponse: genTree(JSON5.parse(JSONRawResponse)),
             });
             this.goToDocPage(id);
 

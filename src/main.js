@@ -19,10 +19,8 @@ Vue.prototype.$http = $http;
 Vue.use(VueClipboard);
 Vue.prototype.$copy = (text) => {
     Vue.prototype.$copyText(text).then((e) => {
-        Vue.prototype.$Notice.success({
-            title:'复制成功',
-            desc: '<b>内容: </b>'+text,
-            top: 200
+        Vue.prototype.$Message.success({
+          content:'复制成功',
         });
     });
 };

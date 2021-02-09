@@ -36,7 +36,7 @@ module.exports = class {
     }
 
     put(req, res) {
-        const { id } = req.body;
+        const { id } = req.params;
         this.model.updateOne({ _id: id }, { ...req.body, updateAt: Date.now() }, (error, { _id }) => {
             if (error) {
                 res.send(error);
