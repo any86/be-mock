@@ -11,24 +11,32 @@
             <TabPane label="头信息" name="0">
                 <TableEditor
                     :value="treeHeader"
-                    @save="updateDoc('treeHeader',$event)"
+                    @save="updateDoc('treeHeader', $event)"
                 />
                 <!-- <TreeDocAndPreview v-if="treeHeader && treeHeader.length > 0" :tree-data="treeHeader" @save="syncDb" /> -->
             </TabPane>
             <TabPane label="请求" name="1">
                 <TableEditor
                     :value="treeRequest"
-                    @save="updateDoc('treeRequest',$event)"
+                    @save="updateDoc('treeRequest', $event)"
                 />
             </TabPane>
             <TabPane label="响应" name="2">
                 <TreeDocAndPreview
                     v-if="treeResponse && treeResponse.length > 0"
                     :tree-data="treeResponse"
-                    @save="syncDb"
+                    @save="updateDoc('treeResponse', $event)"
                 />
                 <p v-else>
-                    <Button>创建数据</Button>
+                    <Input
+                        v-model="JSONRawResponse"
+                        type="textarea"
+                        :rows="5"
+                        placeholder="请输入JSON数据"
+                    />
+                    <Button class="mt-2" type="primary" @click="genResponseTree"
+                        >保存</Button
+                    >
                 </p>
             </TabPane>
 
@@ -36,7 +44,7 @@
                 <TreeMockAndPreview
                     ref="mock"
                     :tree-data="treeResponse"
-                    :request-params="requestParams"
+                    :tree-request="treeRequest"
                 />
             </TabPane>
         </Tabs>
@@ -44,6 +52,8 @@
 </template>
 
 <script>
+import JSON5 from 'json5';
+import genTree from '@/shared/genTree.js';
 import TreeDocAndPreview from './Doc/TreeDocAndPreview';
 import TreeMockAndPreview from './Doc/TreeMockAndPreview';
 import TableEditor from './Doc/TableEditor';
@@ -62,21 +72,13 @@ export default {
             treeResponse: [],
             url: '',
             httpMethod: '',
+            JSONRawResponse: '',
         };
     },
 
     computed: {
         id() {
             return this.$route.params.id;
-        },
-
-        requestParams() {
-            if (void 0 === this.treeRequest) return;
-            const result = [];
-            for (const { key, value } of this.treeRequest) {
-                result.push({ key, value });
-            }
-            return result;
         },
     },
 
@@ -85,8 +87,13 @@ export default {
     },
 
     methods: {
+        genResponseTree() {
+            this.treeResponse = genTree(JSON5.parse(this.JSONRawResponse));
+            this.updateDoc('treeResponse', this.treeResponse);
+        },
+
         updateDoc(key, value) {
-            console.log(key,value);
+            console.log(key, value);
             this.$http.put('/doc/' + this.id, {
                 [key]: value,
             });

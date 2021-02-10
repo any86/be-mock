@@ -2,14 +2,14 @@
     <section class="table-editor">
         <Table class="mt-2" :data="tableData" :columns="columns" border>
             <template
-                v-for="{ slot } in inputsConfig"
+                v-for="{ slot,title } in inputsConfig"
                 slot-scope="{ index }"
                 :slot="slot"
             >
                 <Input
                     :key="slot"
                     v-model="tableData[index][slot]"
-                    placeholder="请输入键名"
+                    :placeholder="`请输入${title}`"
                     @on-keyup="addRow(index)"
                 />
             </template>
@@ -33,7 +33,7 @@ function createRow() {
 
 const inputsConfig = [
     { title: '名称', slot: 'key' },
-    { title: '值', slot: 'value' },
+    // { title: '值', slot: 'value' },
     { title: '描述', slot: 'desc' },
 ];
 export default {

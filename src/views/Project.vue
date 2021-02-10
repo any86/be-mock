@@ -76,8 +76,7 @@
 </template>
 
 <script>
-import JSON5 from 'json5';
-import genTree from '@/shared/genTree.js';
+
 
 function createFormData() {
     return {

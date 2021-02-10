@@ -2,28 +2,19 @@
     <article class="tree-mock-and-preview">
         <Modal
             v-model="isShowQueryForm"
-            title="请确认参数"
+            title="请确认请求参数"
             @on-ok="saveAndGetURL"
         >
             <Form inline>
-                <FormItem
-                    :label="`${propName} (${type})`"
-                    v-for="{ type, propName } in requestParams"
-                    :key="propName"
-                >
-                    <InputNumber
-                        v-if="'Number' === type"
-                        placeholder="请输入模拟值"
-                        v-model="queryFormData[propName]"
-                    />
-
-                    <Input
-                        v-else
-                        v-model="queryFormData[propName]"
-                        clearable
-                        placeholder="请输入模拟值"
-                    />
-                </FormItem>
+                <template v-for="{ key } in treeRequest">
+                    <FormItem :label="key" v-if="'' !== key" :key="key">
+                        <Input
+                            v-model="queryFormData[key]"
+                            clearable
+                            placeholder="请输入模拟值"
+                        />
+                    </FormItem>
+                </template>
             </Form>
         </Modal>
 
@@ -106,7 +97,7 @@ export default {
         treeData: {
             required: true,
         },
-        requestParams: {
+        treeRequest: {
             type: Array,
         },
     },
@@ -118,9 +109,11 @@ export default {
         };
 
         const queryFormData = {};
-        if (void 0 !== this.requestParams) {
-            this.requestParams.forEach(({ propName, type }) => {
-                queryFormData[propName] = VAR_TYPE.Number === type ? 1 : '';
+        if (void 0 !== this.treeRequest) {
+            this.treeRequest.forEach(({ key }) => {
+                if (''!== key.trim()) {
+                    queryFormData[key] = '';
+                }
             });
         }
 
