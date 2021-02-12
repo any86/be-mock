@@ -53,38 +53,6 @@
                 <h2>预览</h2>
                 <TreeDoc class="mt-1" :value="treeData" @show-node="showNode" />
             </Card>
-            <!-- <Card class="ml-2 ovh flex-1" style="background: #333">
-                <Spin v-if="isMockCreating" fix></Spin>
-                <h2 class="text-white d-flex">
-                    假数据
-                    <Button
-                        ghost
-                        class="ml-1"
-                        type="success"
-                        @click="mockData = mock()"
-                    >
-                        <Icon type="md-refresh" /> 换一批
-                    </Button>
-
-                    <Button class="ml-1" ghost type="primary" @click="saveFile">
-                        <Icon type="md-cloud-download" /> 保存本地
-                    </Button>
-
-                    <Button
-                        class="ml-1"
-                        ghost
-                        type="warning"
-                        @click="saveAndGetURL"
-                    >
-                        <Icon type="md-cloud-download" /> 生成链接
-                    </Button>
-                </h2>
-                <highlightjs
-                    v-if="void 0 !== mockData"
-                    language="json"
-                    :code="JSON.stringify(mockData, null, 4)"
-                />
-            </Card> -->
         </div>
     </section>
 </template>
@@ -318,6 +286,7 @@ export default {
                 onOk: () => {
                     data.mock.times = this._activeMockTimes;
                     this.mockData = this.mock();
+                    this.$emit('save');
                 },
             });
             // console.log(data.times);

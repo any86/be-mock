@@ -20,22 +20,21 @@
 
         <Row>
             <!-- 主视图 -->
-            <i-col :xs="24" :sm="24" :md="24" :lg="12" class="p-1">
+            <i-col :xs="24" :sm="24" :md="12" :lg="12" class="p-1">
                 <Card class="flex-1 ovh" style="background: #333">
                     <Spin v-if="isMockCreating" fix></Spin>
-                    <h2 class="text-white d-flex">
-                        预览
+                    <div class="mt-1">
                         <Button
+                            class="mr-1 mb-1"
                             ghost
-                            class="ml-1"
                             type="success"
-                            @click="mockData = mock()"
+                            @click="refreshMock"
                         >
                             <Icon type="md-refresh" /> 换一批
                         </Button>
 
                         <Button
-                            class="ml-1"
+                            class="mr-1 mb-1"
                             ghost
                             type="primary"
                             @click="saveFile"
@@ -44,23 +43,23 @@
                         </Button>
 
                         <Button
-                            class="ml-1"
+                            class="mr-1 mb-1"
                             ghost
                             type="warning"
                             @click="isShowQueryForm = true"
                         >
                             <Icon type="md-cloud-download" /> 生成链接
                         </Button>
-                    </h2>
+                    </div>
                     <highlightjs
-                        v-if="void 0 !== mockData"
+                        v-if="!isMockCreating && void 0 !== mockData"
                         language="json"
                         :code="JSON.stringify(mockData, null, 4)"
                     />
                 </Card>
             </i-col>
 
-            <i-col :xs="24" :sm="24" :md="24" :lg="12" class="p-1">
+            <i-col :xs="24" :sm="24" :md="12" :lg="12" class="p-1">
                 <Table :data="mocks" :columns="columns" border>
                     <template slot-scope="{ row }" slot="action">
                         <Button
@@ -97,6 +96,7 @@ export default {
         treeData: {
             required: true,
         },
+
         treeRequest: {
             type: Array,
         },
@@ -111,7 +111,7 @@ export default {
         const queryFormData = {};
         if (void 0 !== this.treeRequest) {
             this.treeRequest.forEach(({ key }) => {
-                if (''!== key.trim()) {
+                if ('' !== key.trim()) {
                     queryFormData[key] = '';
                 }
             });
@@ -222,7 +222,10 @@ export default {
         },
 
         refreshMock() {
-            this.mockData = this.mock();
+            this.isMockCreating = true;
+            setTimeout(() => {
+                this.mockData = this.mock();
+            }, 500);
         },
 
         /**
@@ -230,7 +233,7 @@ export default {
          */
         mock(node, activeMockData) {
             if (void 0 === this.treeData) return;
-            this.isMockCreating = true;
+            
             // 当前数据节点
             const activeNode = node || this.treeData[0];
             const { type, mock } = activeNode;

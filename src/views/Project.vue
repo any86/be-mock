@@ -19,64 +19,33 @@
                         <Option value="DELETE">DELETE</Option>
                     </Select>
                 </FormItem>
-
-                <!-- <FormItem label="请求头">
-                    <Input
-                        v-model="addForm.JSONRawHeader"
-                        type="textarea"
-                        :rows="2"
-                        placeholder="请输入JSON数据"
-                    />
-                </FormItem>
-                <FormItem label="请求参数">
-                    <Input
-                        v-model="addForm.JSONRawRequest"
-                        type="textarea"
-                        :rows="2"
-                        placeholder="请输入JSON数据"
-                    />
-                </FormItem>
-                <FormItem label="返回值">
-                    <Input
-                        v-model="addForm.JSONRawResponse"
-                        type="textarea"
-                        :rows="5"
-                        placeholder="请输入JSON数据"
-                    />
-                </FormItem> -->
             </Form>
         </Modal>
 
-        <h2>接口列表</h2>
+        <section class="d-flex mt-2">
+            <ul class="docs">
+                <li>
+                    <Button @click="isShowAddForm = true" type="primary"
+                        >新建</Button
+                    >
+                </li>
+                <li
+                    v-for="{ title, _id } in tableData"
+                    :key="_id"
+                    :class="{ active: docId === _id }"
+                    @click="openDoc(_id)"
+                >
+                    {{ title }}
+                </li>
+            </ul>
 
-        <Button class="mt-2" @click="isShowAddForm = true" type="primary"
-            >新建接口文档</Button
-        >
-        <Table
-            class="mt-2"
-            border
-            :loading="isLoading"
-            :columns="columns"
-            :data="tableData"
-        >
-            <template slot-scope="{ row }" slot="action">
-                <Button
-                    type="primary"
-                    size="small"
-                    style="margin-right: 5px"
-                    @click="goToDocPage(row._id)"
-                    >进入</Button
-                >
-                <Button type="error" size="small" @click="remove(row)"
-                    >删除</Button
-                >
-            </template>
-        </Table>
+            <Doc class="flex-1" :doc-id="docId" />
+        </section>
     </article>
 </template>
 
 <script>
-
+import Doc from './Doc';
 
 function createFormData() {
     return {
@@ -91,6 +60,9 @@ function createFormData() {
 
 export default {
     name: 'Project',
+
+    components: { Doc },
+
     data() {
         return {
             isLoading: true,
@@ -105,7 +77,8 @@ export default {
                 {
                     title: '地址',
                     key: 'url',
-                },{
+                },
+                {
                     title: '请求方式',
                     key: 'method',
                 },
@@ -129,6 +102,10 @@ export default {
         projectId() {
             return this.$route.params.id;
         },
+
+        docId() {
+            return this.$route.query.docId;
+        },
     },
 
     mounted() {
@@ -136,6 +113,13 @@ export default {
     },
 
     methods: {
+        openDoc(docId) {
+            const { query } = this.$route;
+            if (docId !== query.docId) {
+                this.$router.push({ query: { ...query, docId } });
+            }
+        },
+
         async remove(row) {
             const { _id } = row;
             await this.$http.delete('/doc', { params: { id: _id } });
@@ -155,27 +139,15 @@ export default {
          * 创建项目
          */
         async createDoc() {
-            const {
-                title,
-                url,
-                method,
-                JSONRawResponse,
-                JSONRawHeader,
-                JSONRawRequest,
-            } = this.addForm;
+            const { title, url, method } = this.addForm;
 
             const { id } = await this.$http.post('/doc', {
                 title,
                 url,
                 method,
                 projectId: this.projectId,
-                // treeRequest: genTree(JSON5.parse(JSONRawRequest)),
-                // treeHeader: genTree(JSON5.parse(JSONRawHeader)),
-                // treeResponse: genTree(JSON5.parse(JSONRawResponse)),
             });
             this.goToDocPage(id);
-
-            // this.addForm = this.createFormData();
         },
 
         goToDocPage(id) {
@@ -194,6 +166,17 @@ export default {
 }
 
 .page-project {
-    padding: 16px;
+    padding: 8px;
+    ul.docs {
+        border-right: 1px solid #eee;
+        li {
+            list-style: none;
+            padding: 8px;
+            cursor: pointer;
+            &.active {
+                color: #69f;
+            }
+        }
+    }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <article class="page-doc p-2">
+    <article class="doc-detail">
         <Spin fix v-if="isLoading"></Spin>
         <div class="p-2 font-4">
             <b class="font-3 text-primary">{{ httpMethod }}</b> : {{ url }}
@@ -22,11 +22,18 @@
                 />
             </TabPane>
             <TabPane label="响应" name="2">
-                <TreeDocAndPreview
-                    v-if="treeResponse && treeResponse.length > 0"
-                    :tree-data="treeResponse"
-                    @save="updateDoc('treeResponse', $event)"
-                />
+                <template v-if="treeResponse && treeResponse.length > 0">
+                    <TreeDocAndPreview
+                        :tree-data="treeResponse"
+                        @save="updateDoc('treeResponse', treeResponse)"
+                    />
+                    <Button
+                        class="mt-2"
+                        type="primary"
+                        @click="treeResponse = void 0"
+                        >清空</Button
+                    >
+                </template>
                 <p v-else>
                     <Input
                         v-model="JSONRawResponse"
@@ -40,9 +47,13 @@
                 </p>
             </TabPane>
 
-            <TabPane label="假数据" name="3">
+            <TabPane
+                :disabled="void 0 === treeResponse"
+                label="假数据"
+                name="3"
+            >
                 <TreeMockAndPreview
-                    ref="mock"
+                    v-if="'3' === activeTab"
                     :tree-data="treeResponse"
                     :tree-request="treeRequest"
                 />
@@ -61,12 +72,13 @@ import TableEditor from './Doc/TableEditor';
 export default {
     name: 'Doc',
 
+    props: { docId: { type: String, required: true } },
+
     components: { TreeDocAndPreview, TreeMockAndPreview, TableEditor },
 
     data() {
         return {
             isLoading: true,
-            activeTab: this.$route.query.tab || '0',
             treeHeader: [],
             treeRequest: [],
             treeResponse: [],
@@ -77,13 +89,18 @@ export default {
     },
 
     computed: {
-        id() {
-            return this.$route.params.id;
+        activeTab() {
+            return this.$route.query.tab || '0';
         },
     },
 
-    async mounted() {
-        await this.getDoc();
+    watch: {
+        docId: {
+            immediate: true,
+            handler() {
+                this.getDoc();
+            },
+        },
     },
 
     methods: {
@@ -92,17 +109,18 @@ export default {
             this.updateDoc('treeResponse', this.treeResponse);
         },
 
+        /**
+         * 更新头/参数/响应数据
+         */
         updateDoc(key, value) {
-            console.log(key, value);
-            this.$http.put('/doc/' + this.id, {
+            this.$http.put('/doc/' + this.docId, {
                 [key]: value,
             });
+            this[key] = value;
         },
+
         changeTab(index) {
             if (this.$route.query.tab != index) {
-                if (index === '3') {
-                    this.$refs.mock.refreshMock();
-                }
                 this.$router.replace({
                     query: { ...this.$route.query, tab: index },
                 });
@@ -117,7 +135,7 @@ export default {
                 treeResponse,
                 url,
                 method,
-            } = await this.$http.get(`/doc/${this.id}`);
+            } = await this.$http.get(`/doc/${this.docId}`);
             this.url = url;
             this.httpMethod = method;
             this.treeHeader = treeHeader;
@@ -125,18 +143,13 @@ export default {
             this.treeResponse = treeResponse;
             this.isLoading = false;
         },
-
-        syncDb() {
-            const { id, treeHeader, treeRequest, treeResponse } = this;
-            this.$http.put('/doc', {
-                id,
-                treeHeader,
-                treeRequest,
-                treeResponse,
-            });
-        },
     },
 };
 </script>
 <style lang="scss" scope>
+.doc-detail {
+    position: relative;
+    min-width: 0;
+    padding: 8px;
+}
 </style>
