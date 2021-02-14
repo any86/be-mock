@@ -33,7 +33,7 @@ function createRow() {
 
 const inputsConfig = [
     { title: '名称', slot: 'key' },
-    { title: '值', slot: 'value' },
+    // { title: '值', slot: 'value' },
     { title: '描述', slot: 'desc' },
 ];
 export default {

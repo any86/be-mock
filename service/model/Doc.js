@@ -7,7 +7,7 @@ const schema = new Schema({
   method: { type: String, isRequired: true },
   projectId: { type: Schema.ObjectId, isRequired: true },
   header: { type: Object, isRequired: true },
-  requestParam: { type: Object, isRequired: true },
+  requestParams: { type: Object, isRequired: true },
   requestBody: { type: Object, isRequired: true },
   response: { type: Object, isRequired: true },
   mock: { type: Object, isRequired: true },

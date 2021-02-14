@@ -1,9 +1,9 @@
 <template>
     <article class="api-runner">
-        <i-input v-model="url">
+        <i-input v-model="activeDoc.url">
             <Select
                 slot="prepend"
-                :value="method"
+                :value="activeDoc.method"
                 @on-change="$emit('update:method', $event)"
                 style="width: 80px"
             >
@@ -31,13 +31,8 @@ export default {
     name: 'ApiRunner',
 
     props: {
-        url: {
-            type: String,
-            required: true,
-        },
-
-        method: {
-            type: String,
+        activeDoc: {
+            type: Object,
             required: true,
         },
     },
@@ -48,13 +43,37 @@ export default {
         return { METHOD_LIST };
     },
 
-    methods:{
-        run(){
-            this.$http[this.method.toLocaleLowerCase()](this.url);
+    methods: {
+        run() {
+            const { method, url, requestParams, requestBody } = this.activeDoc;
+            const params = [];
+            const data = {};
+
+            if (void 0 !== requestParams) {
+                requestParams.forEach(({ key, value }) => {
+                    if ('' !== key) {
+                        params.push(`${key}=${value}`);
+                    }
+                });
+            }
+
+            if (void 0 !== requestBody) {
+                requestBody.forEach(({ key, value }) => {
+                    if ('' !== key) {
+                        data[key] = value;
+                    }
+                });
+            }
+
+            this.$http({
+                url: url + `?${params.join('&')}`,
+                method: method.toLocaleLowerCase(),
+                data,
+            });
         },
 
-        save(){},
-    }
+        save() {},
+    },
 };
 </script>
 <style lang="scss" scope>

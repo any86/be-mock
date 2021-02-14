@@ -12,8 +12,8 @@
             </TabPane>
             <TabPane label="请求(Param)" name="1">
                 <TableEditor
-                    :value="requestParam"
-                    @save="updateDoc('requestParam', $event)"
+                    :value="requestParams"
+                    @save="updateDoc('requestParams', $event)"
                 />
             </TabPane>
 
@@ -54,7 +54,9 @@
                 <TreeMockAndPreview
                     v-if="'4' === activeTab"
                     :tree-data="response"
-                    :tree-request="requestBody"
+                    :request-params="requestParams"
+                    :request-body="requestBody"
+
                 />
             </TabPane>
         </Tabs>
@@ -83,8 +85,11 @@ export default {
         return {
             isLoading: true,
             header: [],
+            // 此处是数据库存储结构, 不是请求结构
             requestBody: [],
-            requestParam: [],
+            // 此处是数据库存储结构, 不是请求结构
+            requestParams: [],
+            // 此处是数据库存储结构, 不是请求结构
             response: [],
             url: '',
             httpMethod: '',
@@ -108,11 +113,6 @@ export default {
     },
 
     methods: {
-        run() {
-            const { httpMethod, url } = this;
-            this.$http[httpMethod.toLocaleLowerCase()](url);
-        },
-
         genResponseTree() {
             this.response = genTree(JSON5.parse(this.JSONRawResponse));
             this.updateDoc('response', this.response);
@@ -140,7 +140,7 @@ export default {
             this.isLoading = true;
             const {
                 header,
-                requestParam,
+                requestParams,
                 requestBody,
                 response,
                 url,
@@ -149,11 +149,18 @@ export default {
             this.url = url;
             this.httpMethod = method;
             this.header = header;
-            this.requestParam = requestParam;
+            this.requestParams = requestParams;
             this.requestBody = requestBody;
             this.response = response;
             this.isLoading = false;
-            this.$emit('active',{url,method})
+            this.$emit('active', {
+                header,
+                requestParams,
+                requestBody,
+                response,
+                url,
+                method,
+            });
         },
     },
 };

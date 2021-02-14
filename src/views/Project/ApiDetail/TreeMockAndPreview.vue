@@ -6,15 +6,33 @@
             @on-ok="saveAndGetURL"
         >
             <Form inline>
-                <template v-for="{ key } in treeRequest">
+                <Divider>Params</Divider>
+                <template v-for="{ key } in requestParams">
                     <FormItem :label="key" v-if="'' !== key" :key="key">
                         <Input
-                            v-model="queryFormData[key]"
+                            v-model="httpParams[key]"
                             clearable
                             placeholder="请输入模拟值"
                         />
                     </FormItem>
                 </template>
+
+                <Divider>Body</Divider>
+
+                <template v-for="{ key } in requestBody">
+                    <FormItem :label="key" v-if="'' !== key" :key="key">
+                        <Input
+                            v-model="httpBody[key]"
+                            clearable
+                            placeholder="请输入模拟值"
+                        />
+                    </FormItem>
+                </template>
+
+                <Divider>状态码</Divider>
+                <FormItem label="http状态码">
+                    <Input v-model="httpCode" />
+                </FormItem>
             </Form>
         </Modal>
 
@@ -88,6 +106,8 @@ import dayjs from 'dayjs';
 import mockjs from 'mockjs';
 import { VAR_TYPE } from '@/const';
 import { mockString, createMockConfig } from '@/shared/mock.js';
+import {objectFilterEmpty } from '@/shared/object.js';
+
 
 export default {
     name: 'TreeMockAndPreview',
@@ -97,7 +117,11 @@ export default {
             required: true,
         },
 
-        treeRequest: {
+        requestParams: {
+            type: Array,
+        },
+
+        requestBody: {
             type: Array,
         },
     },
@@ -108,11 +132,20 @@ export default {
             mock: createMockConfig(),
         };
 
-        const queryFormData = {};
-        if (void 0 !== this.treeRequest) {
-            this.treeRequest.forEach(({ key }) => {
+        const httpParams = {};
+        if (void 0 !== this.requestParams) {
+            this.requestParams.forEach(({ key }) => {
                 if ('' !== key.trim()) {
-                    queryFormData[key] = '';
+                    httpParams[key] = '';
+                }
+            });
+        }
+
+        const httpBody = {};
+        if (void 0 !== this.requestBody) {
+            this.requestBody.forEach(({ key }) => {
+                if ('' !== key.trim()) {
+                    httpBody[key] = '';
                 }
             });
         }
@@ -120,15 +153,26 @@ export default {
         return {
             isShowQueryForm: false,
             queryString: '',
-            queryFormData,
-
+            httpParams,
+            httpBody,
+            httpCode: 200,
             mocks: [],
             columns: [
                 {
-                    title: '参数',
+                    title: '请求params',
                     render(h, { row }) {
                         return h('span', JSON.stringify(row.params));
                     },
+                },
+                {
+                    title: '请求body',
+                    render(h, { row }) {
+                        return h('span', JSON.stringify(row.body));
+                    },
+                },
+                {
+                    title: '状态码',
+                    key: 'httpCode',
                 },
                 {
                     title: '创建时间',
@@ -139,7 +183,7 @@ export default {
                 {
                     title: '操作',
                     slot: 'action',
-                    width: 200,
+                    width: 170,
                     align: 'center',
                 },
             ],
@@ -158,7 +202,7 @@ export default {
 
     computed: {
         docId() {
-            return this.$route.params.id;
+            return this.$route.query.docId;
         },
     },
 
@@ -208,7 +252,9 @@ export default {
         async saveAndGetURL() {
             await this.$http.post('/mock', {
                 mock: this.mockData,
-                params: this.queryFormData,
+                params: objectFilterEmpty(this.httpParams),
+                body:objectFilterEmpty(this.httpBody),
+                httpCode:this.httpCode,
                 docId: this.docId,
             });
             this.getMockList();
@@ -233,7 +279,7 @@ export default {
          */
         mock(node, activeMockData) {
             if (void 0 === this.treeData) return;
-            
+
             // 当前数据节点
             const activeNode = node || this.treeData[0];
             const { type, mock } = activeNode;

@@ -43,10 +43,16 @@
                     </Select>
                 </FormItem>
 
-                <Button type="error" long>删除</Button>
                 <Button class="mt-2" type="primary" long @click="saveDoc"
                     >保存</Button
                 >
+
+                <Divider><Icon type="md-alert" /> 危险操作</Divider>
+                <FormItem label="输入项目名称才可以删除">
+                    <Input v-model="editForm.url" placeholder="输入项目名称才可以删除" />
+                </FormItem>
+                <Button type="error" long>删除</Button>
+
             </Form>
         </Drawer>
 
@@ -105,7 +111,9 @@ export default {
             if ('' === keywords) {
                 return this.list;
             }
-            return this.list.filter((row) => row.title.toLocaleLowerCase().includes(this.keywords));
+            return this.list.filter((row) =>
+                row.title.toLocaleLowerCase().includes(this.keywords)
+            );
         },
     },
 

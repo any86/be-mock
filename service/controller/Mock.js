@@ -1,6 +1,21 @@
 const Base = require('./Base');
 const Mock = require('../model/Mock');
 
+function isMathObject(obj1 = {}, obj2) {
+    for (const key in obj1) {
+        if (obj1[key] != obj2[key] && '' !== obj1[key]) {
+            return false;
+        }
+    }
+
+    for (const key in obj2) {
+        if (obj2[key] != obj1[key] && '' !== obj2[key]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 module.exports = class extends Base {
     constructor() {
         super(Mock);
@@ -17,21 +32,27 @@ module.exports = class extends Base {
                 if (error) {
                     res.send(error);
                 } else {
-                    let isMatch = true;
+                    let activeRow;
+                    let isMatch = false;
+                    // 检查http-params
                     for (const row of document) {
-                        isMatch = true;
-                        for (const key in req.query) {
-                            if (row.params[key] != req.query[key]) {
-                                isMatch = false;
+                        isMatch = isMathObject(row.params, req.query);
+                        console.log(isMatch, 1, row.params, req.query);
+
+                        // params 匹配
+                        // 开始测试body是否匹配
+                        if (isMatch) {
+                            isMatch = isMathObject(row.body, req.body);
+                            if (isMatch) {
+                                activeRow = row;
                                 break;
                             }
                         }
-                        if (isMatch) {
-                            res.json(row.mock);
-                            break;
-                        }
                     }
-                    if(!isMatch){
+                    console.log(isMatch, 2);
+                    if (isMatch) {
+                        res.status(activeRow.httpCode).json(activeRow.mock);
+                    } else {
                         res.status(404).send('<h1>接口不存在,请检查参数</h1>');
                     }
                 }

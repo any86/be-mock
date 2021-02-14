@@ -12,12 +12,12 @@
                 :list="apiList"
                 :doc-id="docId"
                 @change="getList"
-                @after-update="afterUpdateApi"
+                @after-update="setActiveDoc"
             />
 
             <div class="flex-1 ml-2">
-                <ApiRunner :url="activeDoc.url" :method="activeDoc.method" />
-                <ApiDetail class="mt-2" :doc-id="docId" @active="getActiveDoc" />
+                <ApiRunner :active-doc="activeDoc"/>
+                <ApiDetail class="mt-2" :doc-id="docId" @active="setActiveDoc" />
             </div>
         </section>
     </article>
@@ -37,7 +37,7 @@ export default {
         return {
             isLoading: true,
             apiList: [],
-            activeDoc:{url:'', method:''},
+            activeDoc:{},
         };
     },
 
@@ -56,12 +56,8 @@ export default {
     },
 
     methods: {
-        afterUpdateApi(activeDoc){
-            this.activeDoc = activeDoc;
-        },
-
-        getActiveDoc(activeDoc) {
-            this.activeDoc = activeDoc;
+        setActiveDoc(activeDoc) {
+            this.$set(this,'activeDoc',activeDoc);
         },
 
         async getList() {
