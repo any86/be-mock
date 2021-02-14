@@ -33,11 +33,11 @@ const routes = [
     name: 'Register',
     component: Register
 },
-{
-    path: '/doc/:id',
-    name: 'Doc',
-    component: () => import( /* webpackChunkName: "Doc" */ '../views/Doc.vue')
-},
+// {
+//     path: '/doc/:id',
+//     name: 'Doc',
+//     component: () => import( /* webpackChunkName: "Doc" */ '../views/Doc.vue')
+// },
 {
     path: '/mock',
     name: 'Mock',

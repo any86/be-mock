@@ -32,3 +32,5 @@ export const VAR_COLOR_MAP = of({
     Array: '#dc3545',
     Null: '#4dd0e1',
 });
+
+export const METHOD_LIST = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];

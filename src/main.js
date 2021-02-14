@@ -5,7 +5,7 @@ import store from './store'
 
 import iView from 'view-design';
 import 'view-design/dist/styles/iview.css';
-import '@5a/css/dist/helpers.css'
+import '@5a.css/helpers'
 import hljs from 'highlight.js/lib/core';
 import json from 'highlight.js/lib/languages/json';
 import 'highlight.js/styles/agate.css';

@@ -1,36 +1,39 @@
 <template>
     <article class="doc-detail">
         <Spin fix v-if="isLoading"></Spin>
-        <div class="p-2 font-4">
-            <b class="font-3 text-primary">{{ httpMethod }}</b> : {{ url }}
-            <Button size="small" @click="$copy(url)"
-                ><Icon type="md-copy" /> 复制</Button
-            >
-        </div>
+
         <Tabs v-if="!isLoading" :value="activeTab" @input="changeTab">
             <TabPane label="头信息" name="0">
                 <TableEditor
-                    :value="treeHeader"
-                    @save="updateDoc('treeHeader', $event)"
+                    :value="header"
+                    @save="updateDoc('header', $event)"
                 />
-                <!-- <TreeDocAndPreview v-if="treeHeader && treeHeader.length > 0" :tree-data="treeHeader" @save="syncDb" /> -->
+                <!-- <TreeDocAndPreview v-if="header && header.length > 0" :tree-data="header" @save="syncDb" /> -->
             </TabPane>
-            <TabPane label="请求" name="1">
+            <TabPane label="请求(Param)" name="1">
                 <TableEditor
-                    :value="treeRequest"
-                    @save="updateDoc('treeRequest', $event)"
+                    :value="requestParam"
+                    @save="updateDoc('requestParam', $event)"
                 />
             </TabPane>
-            <TabPane label="响应" name="2">
-                <template v-if="treeResponse && treeResponse.length > 0">
+
+            <TabPane label="请求(Body)" name="2">
+                <TableEditor
+                    :value="requestBody"
+                    @save="updateDoc('requestBody', $event)"
+                />
+            </TabPane>
+
+            <TabPane label="响应" name="3">
+                <template v-if="response && response.length > 0">
                     <TreeDocAndPreview
-                        :tree-data="treeResponse"
-                        @save="updateDoc('treeResponse', treeResponse)"
+                        :tree-data="response"
+                        @save="updateDoc('response', response)"
                     />
                     <Button
                         class="mt-2"
                         type="primary"
-                        @click="treeResponse = void 0"
+                        @click="response = void 0"
                         >清空</Button
                     >
                 </template>
@@ -47,15 +50,11 @@
                 </p>
             </TabPane>
 
-            <TabPane
-                :disabled="void 0 === treeResponse"
-                label="假数据"
-                name="3"
-            >
+            <TabPane :disabled="void 0 === response" label="假数据" name="4">
                 <TreeMockAndPreview
-                    v-if="'3' === activeTab"
-                    :tree-data="treeResponse"
-                    :tree-request="treeRequest"
+                    v-if="'4' === activeTab"
+                    :tree-data="response"
+                    :tree-request="requestBody"
                 />
             </TabPane>
         </Tabs>
@@ -65,23 +64,28 @@
 <script>
 import JSON5 from 'json5';
 import genTree from '@/shared/genTree.js';
-import TreeDocAndPreview from './Doc/TreeDocAndPreview';
-import TreeMockAndPreview from './Doc/TreeMockAndPreview';
-import TableEditor from './Doc/TableEditor';
+import TreeDocAndPreview from './ApiDetail/TreeDocAndPreview';
+import TreeMockAndPreview from './ApiDetail/TreeMockAndPreview';
+import TableEditor from './ApiDetail/TableEditor';
 
 export default {
-    name: 'Doc',
+    name: 'ApiDetail',
 
-    props: { docId: { type: String, required: true } },
+    props: { docId: { type: String } },
 
-    components: { TreeDocAndPreview, TreeMockAndPreview, TableEditor },
+    components: {
+        TreeDocAndPreview,
+        TreeMockAndPreview,
+        TableEditor,
+    },
 
     data() {
         return {
             isLoading: true,
-            treeHeader: [],
-            treeRequest: [],
-            treeResponse: [],
+            header: [],
+            requestBody: [],
+            requestParam: [],
+            response: [],
             url: '',
             httpMethod: '',
             JSONRawResponse: '',
@@ -104,9 +108,14 @@ export default {
     },
 
     methods: {
+        run() {
+            const { httpMethod, url } = this;
+            this.$http[httpMethod.toLocaleLowerCase()](url);
+        },
+
         genResponseTree() {
-            this.treeResponse = genTree(JSON5.parse(this.JSONRawResponse));
-            this.updateDoc('treeResponse', this.treeResponse);
+            this.response = genTree(JSON5.parse(this.JSONRawResponse));
+            this.updateDoc('response', this.response);
         },
 
         /**
@@ -130,18 +139,21 @@ export default {
         async getDoc() {
             this.isLoading = true;
             const {
-                treeHeader,
-                treeRequest,
-                treeResponse,
+                header,
+                requestParam,
+                requestBody,
+                response,
                 url,
                 method,
             } = await this.$http.get(`/doc/${this.docId}`);
             this.url = url;
             this.httpMethod = method;
-            this.treeHeader = treeHeader;
-            this.treeRequest = treeRequest;
-            this.treeResponse = treeResponse;
+            this.header = header;
+            this.requestParam = requestParam;
+            this.requestBody = requestBody;
+            this.response = response;
             this.isLoading = false;
+            this.$emit('active',{url,method})
         },
     },
 };
@@ -150,6 +162,5 @@ export default {
 .doc-detail {
     position: relative;
     min-width: 0;
-    padding: 8px;
 }
 </style>

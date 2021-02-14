@@ -1,5 +1,9 @@
 <template>
     <Form :model="formData" :label-width="110" class="form-prop">
+        <FormItem prop="text" label="📣标题">
+            <Input v-model="formData.text" placeholder="原型文档上的文案" clearable />
+        </FormItem>
+        
         <FormItem
             v-if="
                 void 0 !== formData.propName && void 0 !== formData.parentType
@@ -25,9 +29,7 @@
             </Select>
         </FormItem>
 
-        <FormItem prop="text" label="📣简述">
-            <Input v-model="formData.text" placeholder="原型文档上的文案" clearable />
-        </FormItem>
+
 
         <!-- 假数据设置 -->
         <section

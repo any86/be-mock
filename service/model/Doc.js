@@ -6,11 +6,12 @@ const schema = new Schema({
   url: { type: String, isRequired: true },
   method: { type: String, isRequired: true },
   projectId: { type: Schema.ObjectId, isRequired: true },
-  treeHeader: { type: Object, isRequired: true },
-  treeRequest: { type: Object, isRequired: true },
-  treeResponse: { type: Object, isRequired: true },
+  header: { type: Object, isRequired: true },
+  requestParam: { type: Object, isRequired: true },
+  requestBody: { type: Object, isRequired: true },
+  response: { type: Object, isRequired: true },
   mock: { type: Object, isRequired: true },
-  createAt: { type: Date,  isRequired: true },
+  createAt: { type: Date, isRequired: true },
   updateAt: { type: Date, default: Date.now(), isRequired: true },
 });
 

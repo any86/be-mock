@@ -30,6 +30,11 @@ app.all('*', function (req, res, next) {
   next();
 });
 
+
+app.all('/run',(req,res)=>{
+  res.send(req);
+})
+
 app.listen(3000, () => {
   console.warn('express:ok')
 });
@@ -59,5 +64,7 @@ for (const path in map) {
   app.put(`${path}/:id`, controller.put.bind(controller));
   app.delete(path, controller.delete.bind(controller));
 }
+
+
 
 
