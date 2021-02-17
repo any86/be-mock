@@ -21,8 +21,9 @@
                 style=""
                 :to="{
                     name: 'Project',
-                    params: { id: item._id },
+                    params: { id: item._id},
                 }"
+                @click.native="$store.commit('setActiveProject', item)"
             >
                 <Icon type="md-flask" size="56" color="#2196f3" />
                 <h3 class="project-card__title">{{ item.title }}</h3></Card
@@ -128,18 +129,22 @@ export default {
 <style lang="scss" scoped>
 .page-projects {
     padding: 16px;
-    .project-cards{
+    .project-cards {
         display: flex;
-        margin-top:16px;
+        margin-top: 16px;
         flex-wrap: wrap;
-        .project-card{
+        .project-card {
             flex-basis: 236px;
             flex-shrink: 0;
             flex-grow: 0;
             margin-right: 16px;
             margin-bottom: 16px;
             text-align: center;
-            &__title{color: #000;text-align: center;margin-top: 8px;}
+            &__title {
+                color: #000;
+                text-align: center;
+                margin-top: 8px;
+            }
         }
     }
 }

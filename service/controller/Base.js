@@ -5,7 +5,7 @@ module.exports = class {
     }
 
     get(req, res) {
-        const { id: _id } = req.query;
+        const { id: _id } = req.params;
         if (_id) {
             this.model.findOne({ _id }, (error, document) => {
                 if (error) {
@@ -47,7 +47,7 @@ module.exports = class {
     }
 
     delete(req, res) {
-        const { id: _id } = req.query;
+        const { id: _id } = req.params;
         this.model.deleteOne({ _id }, (error, { _id }) => {
             if (error) {
                 res.send(error);

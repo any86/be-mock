@@ -18,7 +18,7 @@ mongoose.connect(URL, {
   useFindAndModify: false,
   useCreateIndex: true
 }).then(d => {
-console.warn('mongo:ok');
+  console.warn('mongo:ok');
 });
 app.use(express.json())
 
@@ -31,7 +31,7 @@ app.all('*', function (req, res, next) {
 });
 
 
-app.all('/run',(req,res)=>{
+app.all('/run', (req, res) => {
   res.send(req);
 })
 
@@ -63,6 +63,7 @@ for (const path in map) {
   app.put(path, controller.put.bind(controller));
   app.put(`${path}/:id`, controller.put.bind(controller));
   app.delete(path, controller.delete.bind(controller));
+  app.delete(`${path}/:id`, controller.delete.bind(controller));
 }
 
 

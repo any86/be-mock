@@ -233,9 +233,7 @@ export default {
         },
 
         async remove(row) {
-            await this.$http.delete('/mock', {
-                params: { id: row._id },
-            });
+            await this.$http.delete('/mock/'+row._id);
             this.getMockList();
         },
 

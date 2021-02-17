@@ -59,6 +59,16 @@
 
                 />
             </TabPane>
+
+            <TabPane :disabled="void 0 === response" label="导出" name="5">
+                <ExportFile
+                    v-if="'5' === activeTab"
+                    :response="response"
+                    :request-params="requestParams"
+                    :request-body="requestBody"
+
+                />
+            </TabPane>
         </Tabs>
     </article>
 </template>
@@ -69,6 +79,7 @@ import genTree from '@/shared/genTree.js';
 import TreeDocAndPreview from './ApiDetail/TreeDocAndPreview';
 import TreeMockAndPreview from './ApiDetail/TreeMockAndPreview';
 import TableEditor from './ApiDetail/TableEditor';
+import ExportFile from './ApiDetail/ExportFile';
 
 export default {
     name: 'ApiDetail',
@@ -79,6 +90,7 @@ export default {
         TreeDocAndPreview,
         TreeMockAndPreview,
         TableEditor,
+        ExportFile,
     },
 
     data() {

@@ -21,6 +21,17 @@ module.exports = class extends Base {
         super(Mock);
     }
 
+
+    post(req, res) {
+        this.model.create({ ...req.body, createAt: Date.now() }, (error, { _id }) => {
+            if (error) {
+                res.send(error);
+            } else {
+                res.json({ id: _id });
+            }
+        });
+    }
+
     /**
      * 根据参数和id返回mock数据
      */

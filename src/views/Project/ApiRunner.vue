@@ -22,6 +22,8 @@
         <Button class="ml-1" type="success" @click="save"
             ><Icon type="md-cloud-upload" /> 保存</Button
         >
+
+        <slot name="append"></slot>
     </article>
 </template>
 
